@@ -3,19 +3,16 @@ package pl.edu.mimuw.matrix;
 import java.util.function.DoubleFunction;
 
 public final class AntiDiagonalMatrix extends Matrix {
-  private final int size;
   private final double[] antiDiagonalValues;
 
   public AntiDiagonalMatrix(double... antiDiagonalValues) {
     super(Shape.square(antiDiagonalValues.length));
     this.antiDiagonalValues = antiDiagonalValues;
-    this.size = antiDiagonalValues.length;
   }
 
   @Override
   public double getButUnchecked(int row, int column) {
-    if (row == shape().edge() - column - 1)
-      return antiDiagonalValues[row];
+    if (row == shape().edge() - column - 1) return antiDiagonalValues[row];
     return 0;
   }
 

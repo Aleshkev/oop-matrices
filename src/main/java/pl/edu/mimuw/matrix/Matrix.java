@@ -60,23 +60,27 @@ public abstract class Matrix implements IDoubleMatrix {
 
   @Override
   public double normOne() {
-    return getExistingColumns().mapToDouble(
-            j -> getExistingCellsInColumn(j).mapToDouble(
-                    i -> Math.abs(get(i, j))).sum()).max().orElseThrow();
+    return getExistingColumns()
+        .mapToDouble(j -> getExistingCellsInColumn(j).mapToDouble(i -> Math.abs(get(i, j))).sum())
+        .max()
+        .orElseThrow();
   }
 
   @Override
   public double normInfinity() {
-    return getExistingRows().mapToDouble(
-            i -> getExistingCellsInRow(i).mapToDouble(
-                    j -> Math.abs(get(i, j))).sum()).max().orElseThrow();
+    return getExistingRows()
+        .mapToDouble(i -> getExistingCellsInRow(i).mapToDouble(j -> Math.abs(get(i, j))).sum())
+        .max()
+        .orElseThrow();
   }
 
   @Override
   public double frobeniusNorm() {
-    return Math.sqrt(getExistingRows().mapToDouble(
-            i -> getExistingCellsInRow(i).mapToDouble(
-                    j -> Math.pow(get(i, j), 2)).sum()).sum());
+    return Math.sqrt(
+        getExistingRows()
+            .mapToDouble(
+                i -> getExistingCellsInRow(i).mapToDouble(j -> Math.pow(get(i, j), 2)).sum())
+            .sum());
   }
 
   // Retrieving the cells.
@@ -92,39 +96,7 @@ public abstract class Matrix implements IDoubleMatrix {
     return getButUnchecked(row, column);
   }
 
-  // String representation.
-
-  @Override
-  public String toString() {
-    var s = new StringBuilder();
-    s.append(super.toString()).append(" ").append(shape()).append("\n");
-
-    var width = 7;
-    s.append(" { { ");
-    for (var y = 0; y < shape().rows; y++) {
-      if (y > 0) s.append("   { ");
-      for (var x = 0; x < shape().columns; x++) {
-        if (x > 0) s.append(", ");
-        var zeroesUntil = x;
-        while (zeroesUntil < shape().columns && Math.abs(get(y, zeroesUntil)) == 0.0)
-          ++zeroesUntil;
-
-        if (zeroesUntil - x < 3) {
-          s.append(Iteration.padLeft(Double.toString(get(y, x)), width - 2));
-          continue;
-        }
-        var spaces = " ".repeat(width * (zeroesUntil - x) - "..., ".length());
-        if (x == 0 && zeroesUntil < shape().columns)
-          s.append(spaces).append("...");
-        else s.append("...").append(spaces);
-        x = zeroesUntil - 1;
-      }
-      if (y + 1 < shape().rows) s.append(" }, \n");
-    }
-    s.append(" } }\n");
-
-    return s.toString();
-  }
+  // Metadata used by other methods.
 
   protected IntStream getExistingRows() {
     return IntStream.range(0, shape().rows);
@@ -144,5 +116,37 @@ public abstract class Matrix implements IDoubleMatrix {
 
   public Shape shape() {
     return theShape;
+  }
+
+  // String representation.
+
+  @Override
+  public String toString() {
+    var s = new StringBuilder();
+    s.append(super.toString()).append(" ").append(shape()).append("\n");
+
+    var width = 7;
+    s.append(" { { ");
+    for (var y = 0; y < shape().rows; y++) {
+      if (y > 0) s.append("   { ");
+      for (var x = 0; x < shape().columns; x++) {
+        if (x > 0) s.append(", ");
+        var zeroesUntil = x;
+        while (zeroesUntil < shape().columns && Math.abs(get(y, zeroesUntil)) == 0.0) ++zeroesUntil;
+
+        if (zeroesUntil - x < 3) {
+          s.append(Iteration.padLeft(Double.toString(get(y, x)), width - 2));
+          continue;
+        }
+        var spaces = " ".repeat(width * (zeroesUntil - x) - "..., ".length());
+        if (x == 0 && zeroesUntil < shape().columns) s.append(spaces).append("...");
+        else s.append("...").append(spaces);
+        x = zeroesUntil - 1;
+      }
+      if (y + 1 < shape().rows) s.append(" }, \n");
+    }
+    s.append(" } }\n");
+
+    return s.toString();
   }
 }

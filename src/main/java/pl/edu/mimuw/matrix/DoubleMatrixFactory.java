@@ -36,6 +36,7 @@ public class DoubleMatrixFactory {
   public static IDoubleMatrix column(int columns, double... columnValues) {
     return new ColumnMatrix(columns, columnValues);
   }
+
   public static IDoubleMatrix row(int rows, double... rowValues) {
     return new RowMatrix(rows, rowValues);
   }

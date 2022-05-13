@@ -26,13 +26,13 @@ public final class MatrixCellValue {
 
   public int compareByRowThenByColumn(MatrixCellValue other) {
     return row != other.row
-            ? Integer.compare(row, other.row)
-            : Integer.compare(column, other.column);
+        ? Integer.compare(row, other.row)
+        : Integer.compare(column, other.column);
   }
 
   public int compareByColumnThenByRow(MatrixCellValue other) {
     return column != other.column
-            ? Integer.compare(column, other.column)
-            : Integer.compare(row, other.row);
+        ? Integer.compare(column, other.column)
+        : Integer.compare(row, other.row);
   }
 }

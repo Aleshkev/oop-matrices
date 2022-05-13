@@ -27,7 +27,8 @@ public final class VectorMatrix extends Matrix {
 
   @Override
   protected IDoubleMatrix doMultiplication(IDoubleMatrix other, Shape resultShape) {
-    return VectorMatrix.fromMatrix(FullMatrix.fromMatrix(this).doMultiplication(other, resultShape));
+    return VectorMatrix.fromMatrix(
+        FullMatrix.fromMatrix(this).doMultiplication(other, resultShape));
   }
 
   @Override
