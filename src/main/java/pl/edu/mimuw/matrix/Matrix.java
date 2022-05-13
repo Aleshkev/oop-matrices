@@ -1,7 +1,6 @@
 package pl.edu.mimuw.matrix;
 
-import java.util.function.BiFunction;
-import java.util.stream.IntStream;
+import java.util.function.DoubleFunction;
 
 public abstract class Matrix implements IDoubleMatrix {
   private final Shape theShape;
@@ -10,84 +9,78 @@ public abstract class Matrix implements IDoubleMatrix {
     this.theShape = theShape;
   }
 
-  private IDoubleMatrix createFullMatrix(
-      Shape matrixShape, BiFunction<Integer, Integer, Double> getCellValue) {
-    var values = new double[matrixShape.rows][matrixShape.columns];
-    for (var y = 0; y < matrixShape.rows; y++)
-      for (var x = 0; x < matrixShape.columns; x++) values[y][x] = getCellValue.apply(x, y);
-    return new FullMatrix(values);
-  }
+  // Multiplication.
 
-  public IDoubleMatrix timesButUnchecked(IDoubleMatrix other) {
-    var depth = shape().columns;
-    return createFullMatrix(
-        Shape.matrix(shape().rows, other.shape().columns),
-        (x, y) -> IntStream.range(0, depth).mapToDouble(i -> get(y, i) * other.get(i, x)).sum());
-  }
+  protected abstract IDoubleMatrix doMultiplication(IDoubleMatrix other, Shape resultShape);
 
   @Override
   public IDoubleMatrix times(IDoubleMatrix other) {
     assert shape().columns == other.shape().rows;
-    return timesButUnchecked(other);
+    return doMultiplication(other, Shape.matrix(shape().rows, other.shape().columns));
   }
 
-  @Override
-  public IDoubleMatrix times(double scalar) {
-    return createFullMatrix(shape(), (x, y) -> get(y, x) * scalar);
-  }
+  // Addition.
 
-  @Override
-  public IDoubleMatrix plus(double scalar) {
-    return createFullMatrix(shape(), (x, y) -> get(y, x) + scalar);
-  }
-
-  @Override
-  public IDoubleMatrix minus(double scalar) {
-    return plus(scalar != 0.0 ? -scalar : scalar);
-  }
-
-  protected IDoubleMatrix plusButUnchecked(IDoubleMatrix other) {
-    return createFullMatrix(shape(), (x, y) -> get(y, x) + other.get(y, x));
-  }
+  protected abstract IDoubleMatrix doAddition(IDoubleMatrix other);
 
   @Override
   public IDoubleMatrix plus(IDoubleMatrix other) {
     assert shape().equals(other.shape());
-    return plusButUnchecked(other);
-  }
-
-  @Override
-  public IDoubleMatrix negative() {
-    return times(-1);
+    return doAddition(other);
   }
 
   @Override
   public IDoubleMatrix minus(IDoubleMatrix other) {
-    return plus(other.negative());
+    return plus(other.times(-1));
+  }
+
+  // Scalar multiplication and addition.
+
+  protected abstract IDoubleMatrix doScalarOperation(DoubleFunction<Double> operator);
+
+  @Override
+  public IDoubleMatrix times(double scalar) {
+    if (scalar == 1) return this;
+    return doScalarOperation(x -> scalar * x);
   }
 
   @Override
+  public IDoubleMatrix plus(double scalar) {
+    if (Math.abs(scalar) == 0) return this;
+    return doScalarOperation(x -> x + scalar);
+  }
+
+  @Override
+  public IDoubleMatrix minus(double scalar) {
+    return plus(-scalar);
+  }
+
+  // Norm functions.
+
+  @Override
   public double normOne() {
-    return StreamUtil.mapRangeMax(
-        shape().columns, j -> StreamUtil.mapRangeSum(shape().rows, i -> Math.abs(get(i, j))));
+    return Iteration.mapRangeMax(
+        shape().columns, j -> Iteration.mapRangeSum(shape().rows, i -> Math.abs(get(i, j))));
   }
 
   @Override
   public double normInfinity() {
-    return StreamUtil.mapRangeMax(
-        shape().rows, i -> StreamUtil.mapRangeSum(shape().columns, j -> Math.abs(get(i, j))));
+    return Iteration.mapRangeMax(
+        shape().rows, i -> Iteration.mapRangeSum(shape().columns, j -> Math.abs(get(i, j))));
   }
 
   @Override
   public double frobeniusNorm() {
     return Math.sqrt(
-        StreamUtil.mapRangeSum(
+        Iteration.mapRangeSum(
             shape().rows,
-            i -> StreamUtil.mapRangeSum(shape().columns, j -> Math.pow(get(i, j), 2))));
+            i -> Iteration.mapRangeSum(shape().columns, j -> Math.pow(get(i, j), 2))));
   }
 
+  // Retrieving the cells.
+
   public double[][] data() {
-    return createFullMatrix(shape(), (x, y) -> get(y, x)).data();
+    return FullMatrix.fromMatrix(this).data();
   }
 
   protected abstract double getButUnchecked(int row, int column);
@@ -97,8 +90,8 @@ public abstract class Matrix implements IDoubleMatrix {
     return getButUnchecked(row, column);
   }
 
-  // This could be less generic and implemented in subclasses, but the output size requires at least
-  // O(n^2) time anyway.
+  // String representation.
+
   @Override
   public String toString() {
     var s = new StringBuilder();
@@ -114,7 +107,7 @@ public abstract class Matrix implements IDoubleMatrix {
         while (zeroesUntil < shape().columns && Math.abs(get(y, zeroesUntil)) == 0.0) ++zeroesUntil;
 
         if (zeroesUntil - x < 3) {
-          s.append(StreamUtil.padLeft(Double.toString(get(y, x)), width - 2));
+          s.append(Iteration.padLeft(Double.toString(get(y, x)), width - 2));
           continue;
         }
         var spaces = " ".repeat(width * (zeroesUntil - x) - "..., ".length());
@@ -131,21 +124,5 @@ public abstract class Matrix implements IDoubleMatrix {
 
   public Shape shape() {
     return theShape;
-  }
-
-  protected IntStream existingRows() {
-    return IntStream.range(0, shape().rows);
-  }
-
-  protected IntStream existingCellsInRow(int row) {
-    return IntStream.range(0, shape().columns);
-  }
-
-  protected IntStream existingColumns() {
-    return IntStream.range(0, shape().columns);
-  }
-
-  protected IntStream existingCellsInColumn(int column) {
-    return IntStream.range(0, shape().rows);
   }
 }

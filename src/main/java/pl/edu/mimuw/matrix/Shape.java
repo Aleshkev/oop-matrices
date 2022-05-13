@@ -25,6 +25,11 @@ public final class Shape {
     return new Shape(rows, columns);
   }
 
+  public int edge() {
+    assert rows == columns;
+    return rows;
+  }
+
   @Override
   public String toString() {
     return "Shape{" + "rows=" + rows + ", columns=" + columns + '}';

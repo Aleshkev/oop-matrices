@@ -1,6 +1,6 @@
 package pl.edu.mimuw.matrix;
 
-import java.util.stream.IntStream;
+import java.util.function.DoubleFunction;
 
 public final class ZeroMatrix extends Matrix {
   public ZeroMatrix(Shape theShape) {
@@ -13,37 +13,17 @@ public final class ZeroMatrix extends Matrix {
   }
 
   @Override
-  public IDoubleMatrix timesButUnchecked(IDoubleMatrix other) {
-    return this;
+  protected IDoubleMatrix doMultiplication(IDoubleMatrix other, Shape resultShape) {
+    return new ZeroMatrix(resultShape);
   }
 
   @Override
-  public IDoubleMatrix times(double scalar) {
-    return this;
-  }
-
-  @Override
-  protected IDoubleMatrix plusButUnchecked(IDoubleMatrix other) {
+  protected IDoubleMatrix doAddition(IDoubleMatrix other) {
     return other;
   }
 
   @Override
-  protected IntStream existingRows() {
-    return IntStream.empty();
-  }
-
-  @Override
-  protected IntStream existingCellsInRow(int row) {
-    return IntStream.empty();
-  }
-
-  @Override
-  protected IntStream existingColumns() {
-    return IntStream.empty();
-  }
-
-  @Override
-  protected IntStream existingCellsInColumn(int column) {
-    return IntStream.empty();
+  protected IDoubleMatrix doScalarOperation(DoubleFunction<Double> operator) {
+    return new ConstantValueMatrix(shape(), operator.apply(0.0));
   }
 }

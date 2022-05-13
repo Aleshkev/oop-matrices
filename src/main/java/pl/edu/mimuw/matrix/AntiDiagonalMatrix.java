@@ -1,12 +1,38 @@
 package pl.edu.mimuw.matrix;
 
-public final class AntiDiagonalMatrix extends DiagonalMatrix {
-  public AntiDiagonalMatrix(double... diagonalValues) {
-    super(diagonalValues);
+import java.util.function.DoubleFunction;
+
+public final class AntiDiagonalMatrix extends Matrix {
+  private final int size;
+  private final double[] antiDiagonalValues;
+
+  public AntiDiagonalMatrix(double... antiDiagonalValues) {
+    super(Shape.square(antiDiagonalValues.length));
+    this.antiDiagonalValues = antiDiagonalValues;
+    this.size = antiDiagonalValues.length;
   }
 
   @Override
-  public double get(int row, int column) {
-    return super.get(shape().rows - row - 1, column);
+  public double getButUnchecked(int row, int column) {
+    if (row == shape().edge() - column - 1)
+      return antiDiagonalValues[row];
+    return 0;
+  }
+
+  // Too lazy to implement these optimally.
+
+  @Override
+  protected IDoubleMatrix doMultiplication(IDoubleMatrix other, Shape resultShape) {
+    return FullMatrix.fromMatrix(this).doMultiplication(other, resultShape);
+  }
+
+  @Override
+  protected IDoubleMatrix doAddition(IDoubleMatrix other) {
+    return FullMatrix.fromMatrix(this).doAddition(other);
+  }
+
+  @Override
+  protected IDoubleMatrix doScalarOperation(DoubleFunction<Double> operator) {
+    return FullMatrix.fromMatrix(this).doScalarOperation(operator);
   }
 }

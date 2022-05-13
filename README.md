@@ -23,3 +23,23 @@ Testy z katalogu `src/test` mogą zostać uruchomione poleceniem
 ```
 które powoduje uruchomienie wszystkich funkcji oznaczonych adnotacjami dostarczonymi
 przez JUnit, np. `@Test`.
+
+---
+
+## Notatki co do rozwiązania
+
+Kolejność kanoniczna:
+    
+    ✨ faves ✨ 
+    ZeroMatrix
+    ConstantValueMatrix
+    IdentityMatrix
+    DiagonalMatrix
+    FullMatrix
+    SparseMatrix
+    
+    😪 gimmicky shit 😪
+    VectorMatrix
+    AntiDiagonalMatrix
+    ColumnMatrix
+    RowMatrix

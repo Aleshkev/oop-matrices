@@ -41,5 +41,7 @@ public class Main {
     System.out.println(vector);
     var zero = DoubleMatrixFactory.zero(Shape.matrix(10, 10));
     System.out.println(zero);
+
+//    var one = DoubleMatrixFactory.sparse({)
   }
 }

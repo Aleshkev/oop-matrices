@@ -1,11 +1,11 @@
 package pl.edu.mimuw.matrix;
 
+import java.util.function.DoubleFunction;
+
 public class IdentityMatrix extends Matrix {
-  private final int size;
 
   protected IdentityMatrix(int size) {
     super(Shape.square(size));
-    this.size = size;
   }
 
   @Override
@@ -14,12 +14,20 @@ public class IdentityMatrix extends Matrix {
   }
 
   @Override
-  public IDoubleMatrix times(IDoubleMatrix other) {
+  protected IDoubleMatrix doMultiplication(IDoubleMatrix other, Shape resultShape) {
     return other;
   }
 
   @Override
-  public IDoubleMatrix times(double scalar) {
-    return new DiagonalMatrix(StreamUtil.nCopies(size, scalar).toArray());
+  protected IDoubleMatrix doAddition(IDoubleMatrix other) {
+    if(other instanceof ZeroMatrix that) return this;
+    if(other instanceof IdentityMatrix that) return DiagonalMatrix.fromIdentityMatrix(this).plus(that);
+    if(other instanceof DiagonalMatrix that) return that.plus(this);
+    return FullMatrix.fromAddition(this, other);
+  }
+
+  @Override
+  protected IDoubleMatrix doScalarOperation(DoubleFunction<Double> operator) {
+    return FullMatrix.fromScalarOperation(this, operator);
   }
 }
