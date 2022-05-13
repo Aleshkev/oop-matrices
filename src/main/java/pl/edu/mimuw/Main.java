@@ -1,6 +1,7 @@
 package pl.edu.mimuw;
 
 import pl.edu.mimuw.matrix.DoubleMatrixFactory;
+import pl.edu.mimuw.matrix.IDoubleMatrix;
 import pl.edu.mimuw.matrix.Shape;
 
 import java.util.Random;
@@ -17,31 +18,26 @@ public class Main {
   private static double[][] randomArray(int rows, int columns) {
     var array = new double[rows][columns];
     for (var y = 0; y < rows; y++)
-      for(var x = 0; x < columns; x++)
+      for (var x = 0; x < columns; x++)
         array[y][x] = y * columns + x + 1;
     return array;
   }
 
   public static void main(String[] args) {
     var antiDiagonal = DoubleMatrixFactory.antiDiagonal(randomArray(10));
-    System.out.println(antiDiagonal);
     var column = DoubleMatrixFactory.column(10, randomArray(10));
-    System.out.println(column);
     var diagonal = DoubleMatrixFactory.diagonal(randomArray(10));
-    System.out.println(diagonal);
     var full = DoubleMatrixFactory.full(randomArray(10, 10));
-    System.out.println(full);
     var identity = DoubleMatrixFactory.identity(10);
-    System.out.println(identity);
     var row = DoubleMatrixFactory.row(10, randomArray(10));
-    System.out.println(row);
     var sparse = DoubleMatrixFactory.sparse(Shape.matrix(10, 10));
-    System.out.println(sparse);
     var vector = DoubleMatrixFactory.vector(randomArray(10));
-    System.out.println(vector);
     var zero = DoubleMatrixFactory.zero(Shape.matrix(10, 10));
-    System.out.println(zero);
 
-//    var one = DoubleMatrixFactory.sparse({)
+    for (var matrix : new IDoubleMatrix[]{antiDiagonal, column, diagonal, full, identity, row, sparse, vector, zero}) {
+      System.out.print(matrix);
+      System.out.println("normOne = " + matrix.normOne() + ", normInfinity = " + matrix.normInfinity() + ", frobeniusNorm = " + matrix.frobeniusNorm());
+      System.out.println("");
+    }
   }
 }

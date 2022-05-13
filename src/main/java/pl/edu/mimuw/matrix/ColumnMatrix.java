@@ -3,16 +3,16 @@ package pl.edu.mimuw.matrix;
 import java.util.function.DoubleFunction;
 
 public final class ColumnMatrix extends Matrix {
-  private final double[] columnValues;
+  private final double[] rowValues;
 
-  public ColumnMatrix(int nColumns, double[] columnValues) {
-    super(Shape.matrix(columnValues.length, nColumns));
-    this.columnValues = columnValues;
+  public ColumnMatrix(int nColumns, double[] rowValues) {
+    super(Shape.matrix(rowValues.length, nColumns));
+    this.rowValues = rowValues;
   }
 
   @Override
   public double getButUnchecked(int row, int column) {
-    return columnValues[row];
+    return rowValues[column];
   }
 
   // Too lazy to implement these optimally.
