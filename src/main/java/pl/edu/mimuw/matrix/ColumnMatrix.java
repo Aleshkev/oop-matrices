@@ -3,8 +3,8 @@ package pl.edu.mimuw.matrix;
 public final class ColumnMatrix extends Matrix {
   private final double[] columnValues;
 
-  public ColumnMatrix(int columns, double[] columnValues) {
-    super(Shape.matrix(columnValues.length, columns));
+  public ColumnMatrix(int nColumns, double[] columnValues) {
+    super(Shape.matrix(columnValues.length, nColumns));
     this.columnValues = columnValues;
   }
 

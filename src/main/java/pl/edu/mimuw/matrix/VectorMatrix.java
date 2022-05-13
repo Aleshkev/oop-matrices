@@ -4,7 +4,7 @@ public final class VectorMatrix extends Matrix {
   private final double[] values;
 
   public VectorMatrix(double[] values) {
-    super(Shape.matrix(values.length, 1));
+    super(Shape.vector(values.length));
     this.values = values;
   }
 

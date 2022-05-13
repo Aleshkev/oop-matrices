@@ -1,6 +1,5 @@
 package pl.edu.mimuw.matrix;
 
-import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 
@@ -57,14 +56,14 @@ public abstract class Matrix implements IDoubleMatrix {
     return plusButUnchecked(other);
   }
 
-  protected IDoubleMatrix minusButUnchecked(IDoubleMatrix other) {
-    return createFullMatrix(shape(), (x, y) -> get(y, x) - other.get(y, x));
+  @Override
+  public IDoubleMatrix negative() {
+    return times(-1);
   }
 
   @Override
   public IDoubleMatrix minus(IDoubleMatrix other) {
-    assert shape().equals(other.shape());
-    return minusButUnchecked(other);
+    return plus(other.negative());
   }
 
   @Override
@@ -98,12 +97,55 @@ public abstract class Matrix implements IDoubleMatrix {
     return getButUnchecked(row, column);
   }
 
+  // This could be less generic and implemented in subclasses, but the output size requires at least
+  // O(n^2) time anyway.
   @Override
   public String toString() {
-    return super.toString() + " " + shape() + " " + Arrays.deepToString(data());
+    var s = new StringBuilder();
+    s.append(super.toString()).append(" ").append(shape()).append("\n");
+
+    var width = 7;
+    s.append(" { { ");
+    for (var y = 0; y < shape().rows; y++) {
+      if (y > 0) s.append("   { ");
+      for (var x = 0; x < shape().columns; x++) {
+        if (x > 0) s.append(", ");
+        var zeroesUntil = x;
+        while (zeroesUntil < shape().columns && Math.abs(get(y, zeroesUntil)) == 0.0) ++zeroesUntil;
+
+        if (zeroesUntil - x < 3) {
+          s.append(StreamUtil.padLeft(Double.toString(get(y, x)), width - 2));
+          continue;
+        }
+        var spaces = " ".repeat(width * (zeroesUntil - x) - "..., ".length());
+        if (x == 0 && zeroesUntil < shape().columns) s.append(spaces).append("...");
+        else s.append("...").append(spaces);
+        x = zeroesUntil - 1;
+      }
+      if (y + 1 < shape().rows) s.append(" }, \n");
+    }
+    s.append(" } }\n");
+
+    return s.toString();
   }
 
   public Shape shape() {
     return theShape;
+  }
+
+  protected IntStream existingRows() {
+    return IntStream.range(0, shape().rows);
+  }
+
+  protected IntStream existingCellsInRow(int row) {
+    return IntStream.range(0, shape().columns);
+  }
+
+  protected IntStream existingColumns() {
+    return IntStream.range(0, shape().columns);
+  }
+
+  protected IntStream existingCellsInColumn(int column) {
+    return IntStream.range(0, shape().rows);
   }
 }

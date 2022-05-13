@@ -14,6 +14,8 @@ public interface IDoubleMatrix {
 
   IDoubleMatrix minus(double scalar);
 
+  IDoubleMatrix negative();
+
   double get(int row, int column);
 
   double[][] data();

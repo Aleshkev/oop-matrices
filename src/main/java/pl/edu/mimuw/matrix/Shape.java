@@ -15,6 +15,10 @@ public final class Shape {
     return Shape.matrix(size, 1);
   }
 
+  public static Shape square(int size) {
+    return Shape.matrix(size, size);
+  }
+
   public static Shape matrix(int rows, int columns) {
     assert columns > 0;
     assert rows > 0;
