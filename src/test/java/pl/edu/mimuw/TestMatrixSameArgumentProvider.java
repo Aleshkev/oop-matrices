@@ -7,7 +7,8 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.params.provider.Arguments.of;
-import static pl.edu.mimuw.TestMatrixData.*;
+import static pl.edu.mimuw.TestMatrixData.FULL_2X3;
+import static pl.edu.mimuw.TestMatrixData.SPARSE_2X3;
 
 public class TestMatrixSameArgumentProvider implements ArgumentsProvider {
 

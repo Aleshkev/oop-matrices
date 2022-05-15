@@ -33,11 +33,15 @@ public class Main {
     var sparse = DoubleMatrixFactory.sparse(Shape.matrix(10, 10));
     var vector = DoubleMatrixFactory.vector(randomArray(10));
     var zero = DoubleMatrixFactory.zero(Shape.matrix(10, 10));
+    var constantValue = DoubleMatrixFactory.constantValue(Shape.matrix(10, 10), 5);
 
-    for (var matrix : new IDoubleMatrix[]{antiDiagonal, column, diagonal, full, identity, row, sparse, vector, zero}) {
+    for (var matrix :
+        new IDoubleMatrix[] {
+          antiDiagonal, column, diagonal, full, identity, row, sparse, vector, zero, constantValue
+        }) {
       System.out.print(matrix);
       System.out.println("normOne = " + matrix.normOne() + ", normInfinity = " + matrix.normInfinity() + ", frobeniusNorm = " + matrix.frobeniusNorm());
-      System.out.println("");
+      System.out.println();
     }
   }
 }

@@ -33,6 +33,10 @@ public class DoubleMatrixFactory {
     return new ZeroMatrix(shape);
   }
 
+  public static IDoubleMatrix constantValue(Shape shape, int value) {
+    return new ConstantValueMatrix(shape, value);
+  }
+
   public static IDoubleMatrix column(int columns, double... columnValues) {
     return new ColumnMatrix(columns, columnValues);
   }

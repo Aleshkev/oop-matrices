@@ -6,8 +6,9 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import pl.edu.mimuw.matrix.DoubleMatrixFactory;
 import pl.edu.mimuw.matrix.IDoubleMatrix;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static pl.edu.mimuw.TestMatrixData.TEST_PRECISION;
+import static pl.edu.mimuw.TestMatrixData.assertArrayEqualsWithTestPrecision;
 import static pl.edu.mimuw.matrix.DoubleMatrixFactory.zero;
 import static pl.edu.mimuw.matrix.MatrixCellValue.cell;
 import static pl.edu.mimuw.matrix.Shape.matrix;
@@ -25,7 +26,7 @@ public class MatrixBinaryOperationTest {
           new double[] {8, 10, 12},
         };
 
-    assertArrayEquals(expectedResult, result);
+    assertArrayEqualsWithTestPrecision(expectedResult, result);
   }
 
   @ParameterizedTest
@@ -39,7 +40,7 @@ public class MatrixBinaryOperationTest {
           new double[] {0, 0, 0},
         };
 
-    assertArrayEquals(expectedResult, result);
+    assertArrayEqualsWithTestPrecision(expectedResult, result);
   }
 
   @ParameterizedTest
@@ -53,7 +54,7 @@ public class MatrixBinaryOperationTest {
           new double[] {49, 64},
         };
 
-    assertArrayEquals(expectedResult, result);
+    assertArrayEqualsWithTestPrecision(expectedResult, result);
   }
 
   @ParameterizedTest
@@ -62,7 +63,7 @@ public class MatrixBinaryOperationTest {
     final var result = m.times(2).minus(m).data();
     final var expectedResult = m.data();
 
-    assertArrayEquals(expectedResult, result);
+    assertArrayEqualsWithTestPrecision(expectedResult, result);
   }
 
   @ParameterizedTest
@@ -71,7 +72,7 @@ public class MatrixBinaryOperationTest {
     final var result = m.times(-2).plus(m).data();
     final var expectedResult = m.times(-1).data();
 
-    assertArrayEquals(expectedResult, result);
+    assertArrayEqualsWithTestPrecision(expectedResult, result);
   }
 
   @ParameterizedTest
@@ -80,16 +81,16 @@ public class MatrixBinaryOperationTest {
     final var result = m.plus(42).minus(42).data();
     final var expectedResult = m.data();
 
-    assertArrayEquals(expectedResult, result);
+    assertArrayEqualsWithTestPrecision(expectedResult, result);
   }
 
   @ParameterizedTest
   @ArgumentsSource(TestMatrixArgumentProvider.class)
   void testMinusPlusScalar(IDoubleMatrix m) {
-    final var result = m.plus(42).minus(42).data();
+    final var result = m.minus(42).plus(42).data();
     final var expectedResult = m.data();
 
-    assertArrayEquals(expectedResult, result);
+    assertArrayEqualsWithTestPrecision(expectedResult, result);
   }
 
   @Test
@@ -105,9 +106,9 @@ public class MatrixBinaryOperationTest {
             matrix(1_000_000, 1_000_000_000), cell(0, 0, 24), cell(767, 123_123, 42));
     final var result = l.plus(r);
 
-    assertEquals(66, result.get(0, 0));
-    assertEquals(66, result.get(767, 123_123));
-    assertEquals(66, result.get(999_999, 999_999_999));
+    assertEquals(66, result.get(0, 0), TEST_PRECISION);
+    assertEquals(66, result.get(767, 123_123), TEST_PRECISION);
+    assertEquals(66, result.get(999_999, 999_999_999), TEST_PRECISION);
   }
 
   @Test
@@ -123,9 +124,9 @@ public class MatrixBinaryOperationTest {
             matrix(1_000_000, 1_000_000_000), cell(0, 0, 24), cell(767, 123_123, 42));
     final var result = l.minus(r);
 
-    assertEquals(18, result.get(0, 0));
-    assertEquals(-18, result.get(767, 123_123));
-    assertEquals(66, result.get(999_999, 999_999_999));
+    assertEquals(18, result.get(0, 0), TEST_PRECISION);
+    assertEquals(-18, result.get(767, 123_123), TEST_PRECISION);
+    assertEquals(66, result.get(999_999, 999_999_999), TEST_PRECISION);
   }
 
   @Test
@@ -151,9 +152,9 @@ public class MatrixBinaryOperationTest {
             cell(444_445, 456_456, 66));
     final var result = l.times(r);
 
-    assertEquals(22, result.get(0, 0));
-    assertEquals(143, result.get(456_456, 456_456));
-    assertEquals(0, result.get(42, 42));
+    assertEquals(22, result.get(0, 0), TEST_PRECISION);
+    assertEquals(143, result.get(456_456, 456_456), TEST_PRECISION);
+    assertEquals(0, result.get(42, 42), TEST_PRECISION);
   }
 
   @ParameterizedTest
@@ -166,7 +167,7 @@ public class MatrixBinaryOperationTest {
           new double[] {0, 0, 0},
           new double[] {0, 0, 0},
         };
-    assertArrayEquals(expectedResult, result);
+    assertArrayEqualsWithTestPrecision(expectedResult, result);
   }
 
   @ParameterizedTest
@@ -175,7 +176,7 @@ public class MatrixBinaryOperationTest {
     final var shape = m.shape();
     final var z = zero(matrix(shape.rows, shape.columns));
     final var expectedResult = m.data();
-    assertArrayEquals(expectedResult, z.plus(m).data());
-    assertArrayEquals(expectedResult, m.plus(z).data());
+    assertArrayEqualsWithTestPrecision(expectedResult, z.plus(m).data());
+    assertArrayEqualsWithTestPrecision(expectedResult, m.plus(z).data());
   }
 }
