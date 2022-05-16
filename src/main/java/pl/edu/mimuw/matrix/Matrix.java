@@ -12,47 +12,143 @@ public abstract class Matrix implements IDoubleMatrix {
 
   // Multiplication.
 
-  protected abstract IDoubleMatrix doMultiplication(IDoubleMatrix other, Shape resultShape);
+  protected final Shape multiplicationResultShape(IDoubleMatrix that) {
+    assert shape().columns == that.shape().rows;
+    return Shape.matrix(shape().rows, that.shape().columns);
+  }
+
+  protected Matrix times(ZeroMatrix that) {
+    return new ZeroMatrix(multiplicationResultShape(that));
+  }
+
+  protected Matrix times(ConstantValueMatrix that) {
+    return FullMatrix.fromMultiplication(this, that);
+  }
+
+  protected Matrix times(IdentityMatrix that) {
+    multiplicationResultShape(that);
+    return this;
+  }
+
+  protected Matrix times(DiagonalMatrix that) {
+    return FullMatrix.fromMultiplication(this, that);
+  }
+
+  protected Matrix times(FullMatrix that) {
+    return FullMatrix.fromMultiplication(this, that);
+  }
+
+  protected Matrix times(SparseMatrix that) {
+    return FullMatrix.fromMultiplication(this, that);
+  }
+
+  protected Matrix times(VectorMatrix that) {
+    return FullMatrix.fromMultiplication(this, that);
+  }
+
+  protected Matrix times(AntiDiagonalMatrix that) {
+    return FullMatrix.fromMultiplication(this, that);
+  }
+
+  protected Matrix times(ColumnMatrix that) {
+    return FullMatrix.fromMultiplication(this, that);
+  }
+
+  protected Matrix times(RowMatrix that) {
+    return FullMatrix.fromMultiplication(this, that);
+  }
+
+  protected abstract Matrix multipliedBy(Matrix what);
 
   @Override
-  public IDoubleMatrix times(IDoubleMatrix other) {
-    assert shape().columns == other.shape().rows;
-    return doMultiplication(other, Shape.matrix(shape().rows, other.shape().columns));
+  public final Matrix times(IDoubleMatrix other) {
+    if (other instanceof Matrix that)
+      return that.multipliedBy(this);
+    return times(FullMatrix.fromMatrix(other));
   }
 
   // Addition.
 
-  protected abstract IDoubleMatrix doAddition(IDoubleMatrix other);
+  protected final Shape additionResultShape(Matrix that) {
+    assert shape().equals(that.shape());
+    return shape();
+  }
+
+  protected Matrix plus(ZeroMatrix that) {
+    additionResultShape(that);
+    return this;
+  }
+
+  protected Matrix plus(ConstantValueMatrix that) {
+    return FullMatrix.fromAddition(this, that);
+  }
+
+  protected Matrix plus(IdentityMatrix that) {
+    return FullMatrix.fromAddition(this, that);
+  }
+
+  protected Matrix plus(DiagonalMatrix that) {
+    return FullMatrix.fromAddition(this, that);
+  }
+
+  protected Matrix plus(FullMatrix that) {
+    return FullMatrix.fromAddition(this, that);
+  }
+
+  protected Matrix plus(SparseMatrix that) {
+    return FullMatrix.fromAddition(this, that);
+  }
+
+  protected Matrix plus(VectorMatrix that) {
+    return FullMatrix.fromAddition(this, that);
+  }
+
+  protected Matrix plus(AntiDiagonalMatrix that) {
+    return FullMatrix.fromAddition(this, that);
+  }
+
+  protected Matrix plus(ColumnMatrix that) {
+    return FullMatrix.fromAddition(this, that);
+  }
+
+  protected Matrix plus(RowMatrix that) {
+    return FullMatrix.fromAddition(this, that);
+  }
+
+  public abstract Matrix addedTo(Matrix what);
 
   @Override
-  public IDoubleMatrix plus(IDoubleMatrix other) {
-    assert shape().equals(other.shape());
-    return doAddition(other);
+  public final Matrix plus(IDoubleMatrix other) {
+    if (other instanceof Matrix that)
+      return that.addedTo(this);
+    return plus(FullMatrix.fromMatrix(other));
   }
 
   @Override
-  public IDoubleMatrix minus(IDoubleMatrix other) {
+  public final Matrix minus(IDoubleMatrix other) {
     return plus(other.times(-1));
   }
 
   // Scalar multiplication and addition.
 
-  protected abstract IDoubleMatrix doScalarOperation(DoubleFunction<Double> operator);
+  protected IDoubleMatrix applyElementwise(DoubleFunction<Double> operator) {
+    return FullMatrix.fromMatrix(this).applyElementwise(operator);
+  }
 
   @Override
-  public IDoubleMatrix times(double scalar) {
+  public final IDoubleMatrix times(double scalar) {
     if (scalar == 1) return this;
-    return doScalarOperation(x -> scalar * x);
+    return applyElementwise(x -> scalar * x);
   }
 
   @Override
-  public IDoubleMatrix plus(double scalar) {
+  public final IDoubleMatrix plus(double scalar) {
     if (Math.abs(scalar) == 0) return this;
-    return doScalarOperation(x -> x + scalar);
+    return applyElementwise(x -> x + scalar);
   }
 
   @Override
-  public IDoubleMatrix minus(double scalar) {
+  public final IDoubleMatrix minus(double scalar) {
     return plus(-scalar);
   }
 
@@ -61,26 +157,26 @@ public abstract class Matrix implements IDoubleMatrix {
   @Override
   public double normOne() {
     return getExistingColumns()
-        .mapToDouble(j -> getExistingCellsInColumn(j).mapToDouble(i -> Math.abs(get(i, j))).sum())
-        .max()
-        .orElseThrow();
+            .mapToDouble(j -> getExistingCellsInColumn(j).mapToDouble(i -> Math.abs(get(i, j))).sum())
+            .max()
+            .orElseThrow();
   }
 
   @Override
   public double normInfinity() {
     return getExistingRows()
-        .mapToDouble(i -> getExistingCellsInRow(i).mapToDouble(j -> Math.abs(get(i, j))).sum())
-        .max()
-        .orElseThrow();
+            .mapToDouble(i -> getExistingCellsInRow(i).mapToDouble(j -> Math.abs(get(i, j))).sum())
+            .max()
+            .orElseThrow();
   }
 
   @Override
   public double frobeniusNorm() {
     return Math.sqrt(
-        getExistingRows()
-            .mapToDouble(
-                i -> getExistingCellsInRow(i).mapToDouble(j -> Math.pow(get(i, j), 2)).sum())
-            .sum());
+            getExistingRows()
+                    .mapToDouble(
+                            i -> getExistingCellsInRow(i).mapToDouble(j -> Math.pow(get(i, j), 2)).sum())
+                    .sum());
   }
 
   // Retrieving the cells.
@@ -132,14 +228,16 @@ public abstract class Matrix implements IDoubleMatrix {
       for (var x = 0; x < shape().columns; x++) {
         if (x > 0) s.append(", ");
         var zeroesUntil = x;
-        while (zeroesUntil < shape().columns && Math.abs(get(y, zeroesUntil)) == 0.0) ++zeroesUntil;
+        while (zeroesUntil < shape().columns && Math.abs(get(y, zeroesUntil)) == 0.0)
+          ++zeroesUntil;
 
         if (zeroesUntil - x < 3) {
           s.append(Iteration.padLeft(Double.toString(get(y, x)), width - 2));
           continue;
         }
         var spaces = " ".repeat(width * (zeroesUntil - x) - "..., ".length());
-        if (x == 0 && zeroesUntil < shape().columns) s.append(spaces).append("...");
+        if (x == 0 && zeroesUntil < shape().columns)
+          s.append(spaces).append("...");
         else s.append("...").append(spaces);
         x = zeroesUntil - 1;
       }

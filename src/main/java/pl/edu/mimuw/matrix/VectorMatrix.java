@@ -10,7 +10,7 @@ public final class VectorMatrix extends Matrix {
     this.values = values;
   }
 
-  public static VectorMatrix fromMatrix(IDoubleMatrix matrix) {
+  private static VectorMatrix fromMatrix(Matrix matrix) {
     assert matrix.shape().columns == 1;
     var values = new double[matrix.shape().rows];
     for (var i = 0; i < matrix.shape().rows; i++) values[i] = matrix.get(i, 0);
@@ -23,21 +23,20 @@ public final class VectorMatrix extends Matrix {
     return values[row];
   }
 
-  // Too lazy to implement these optimally.
-
   @Override
-  protected IDoubleMatrix doMultiplication(IDoubleMatrix other, Shape resultShape) {
-    return VectorMatrix.fromMatrix(
-        FullMatrix.fromMatrix(this).doMultiplication(other, resultShape));
+  protected Matrix multipliedBy(Matrix what) {
+    return what.times(this);
   }
 
   @Override
-  protected IDoubleMatrix doAddition(IDoubleMatrix other) {
-    return VectorMatrix.fromMatrix(FullMatrix.fromMatrix(this).doAddition(other));
+  public Matrix addedTo(Matrix what) {
+    return what.plus(this);
   }
 
   @Override
-  protected IDoubleMatrix doScalarOperation(DoubleFunction<Double> operator) {
-    return VectorMatrix.fromMatrix(FullMatrix.fromMatrix(this).doScalarOperation(operator));
+  protected IDoubleMatrix applyElementwise(DoubleFunction<Double> operator) {
+    return VectorMatrix.fromMatrix(FullMatrix.fromMatrix(this).applyElementwise(operator));
   }
+
+  // This class isn't optimized. See other classes to enjoy some efficient code.
 }

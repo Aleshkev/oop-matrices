@@ -21,12 +21,12 @@ public class DiagonalMatrix extends Matrix {
     return new DiagonalMatrix(values);
   }
 
-  private static IDoubleMatrix fromElementwiseMerge(DiagonalMatrix a, IDoubleMatrix b, BiFunction<Double, Double, Double> f) {
+  private static DiagonalMatrix fromElementwiseMerge(
+      DiagonalMatrix a, DiagonalMatrix b, BiFunction<Double, Double, Double> f) {
     var values = new double[a.size];
     Arrays.setAll(values, i -> f.apply(a.get(i, i), b.get(i, i)));
     return new DiagonalMatrix(values);
   }
-
 
   @Override
   protected double getButUnchecked(int row, int column) {
@@ -34,26 +34,32 @@ public class DiagonalMatrix extends Matrix {
   }
 
   @Override
-  protected IDoubleMatrix doMultiplication(IDoubleMatrix other, Shape resultShape) {
-    if (other instanceof ZeroMatrix that) return that;
-    if (other instanceof IdentityMatrix that) return this;
-    if (other instanceof DiagonalMatrix that)
-      return fromElementwiseMerge(this, that, (a, b) -> a * b);
-    return FullMatrix.fromMultiplication(this, other, resultShape);
+  protected Matrix multipliedBy(Matrix what) {
+    return what.times(this);
   }
 
   @Override
-  protected IDoubleMatrix doAddition(IDoubleMatrix other) {
-    if (other instanceof ZeroMatrix that) return this;
-    if (other instanceof IdentityMatrix that)
-      return fromElementwiseMerge(this, that, Double::sum);
-    if (other instanceof DiagonalMatrix that)
-      return fromElementwiseMerge(this, that, Double::sum);
-    return FullMatrix.fromAddition(this, other);
+  public Matrix addedTo(Matrix what) {
+    return what.plus(this);
   }
 
   @Override
-  protected IDoubleMatrix doScalarOperation(DoubleFunction<Double> operator) {
+  protected Matrix times(DiagonalMatrix that) {
+    return fromElementwiseMerge(this, that, (a, b) -> a * b);
+  }
+
+  @Override
+  protected Matrix plus(IdentityMatrix that) {
+    return plus(fromIdentityMatrix(that));
+  }
+
+  @Override
+  protected Matrix plus(DiagonalMatrix that) {
+    return fromElementwiseMerge(this, that, Double::sum);
+  }
+
+  @Override
+  protected IDoubleMatrix applyElementwise(DoubleFunction<Double> operator) {
     if (operator.apply(0.0) == 0.0)
       return fromElementwiseMerge(this, this, (a, b) -> operator.apply(a));
     return FullMatrix.fromScalarOperation(this, operator);

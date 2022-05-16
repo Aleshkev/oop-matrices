@@ -1,14 +1,17 @@
 package pl.edu.mimuw;
 
+import org.junit.jupiter.api.Test;
 import pl.edu.mimuw.matrix.DoubleMatrixFactory;
+import pl.edu.mimuw.matrix.FullMatrix;
 import pl.edu.mimuw.matrix.IDoubleMatrix;
 import pl.edu.mimuw.matrix.Shape;
 
+import static pl.edu.mimuw.TestMatrixData.assertArrayEqualsWithTestPrecision;
 import static pl.edu.mimuw.matrix.Iteration.randomArray;
 
-public class Main {
-
-  public static void main(String[] args) {
+public class MatrixBinaryOperationCompletenessTest {
+  @Test
+  public void testAllCombinations() {
     var antiDiagonal = DoubleMatrixFactory.antiDiagonal(randomArray(10));
     var column = DoubleMatrixFactory.column(10, randomArray(10));
     var diagonal = DoubleMatrixFactory.diagonal(randomArray(10));
@@ -22,19 +25,21 @@ public class Main {
 
     var all =
         new IDoubleMatrix[] {
-          antiDiagonal, column, diagonal, full, identity, row, sparse, vector, zero, constantValue
+          antiDiagonal, column, diagonal, full, identity, row, sparse, zero, constantValue
         };
 
-    for (var matrix : all) {
-      System.out.print(matrix);
-      System.out.println(
-          "normOne = "
-              + matrix.normOne()
-              + ", normInfinity = "
-              + matrix.normInfinity()
-              + ", frobeniusNorm = "
-              + matrix.frobeniusNorm());
-      System.out.println();
+    for (var a : all) {
+      for (var b : all) {
+        var aPlusB = a.plus(b);
+        var aPlusBRef = FullMatrix.fromMatrix(a).plus(FullMatrix.fromMatrix(b));
+        var bPlusA = b.plus(a);
+        var aTimesB = a.times(b);
+        var aTimesBRef = FullMatrix.fromMatrix(a).times(FullMatrix.fromMatrix(b));
+
+        assertArrayEqualsWithTestPrecision(aPlusBRef.data(), aPlusB.data());
+        assertArrayEqualsWithTestPrecision(aPlusBRef.data(), bPlusA.data());
+        assertArrayEqualsWithTestPrecision(aTimesBRef.data(), aTimesB.data());
+      }
     }
   }
 }
