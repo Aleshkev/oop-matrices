@@ -2,6 +2,7 @@ package pl.edu.mimuw;
 
 import pl.edu.mimuw.matrix.DoubleMatrixFactory;
 import pl.edu.mimuw.matrix.IDoubleMatrix;
+import pl.edu.mimuw.matrix.MatrixCellValue;
 import pl.edu.mimuw.matrix.Shape;
 
 import static pl.edu.mimuw.matrix.Utility.randomArray;
@@ -20,7 +21,9 @@ public class Main {
     var full = DoubleMatrixFactory.full(randomArray(10, 10));
     var identity = DoubleMatrixFactory.identity(10);
     var row = DoubleMatrixFactory.row(10, randomArray(10));
-    var sparse = DoubleMatrixFactory.sparse(Shape.matrix(10, 10));
+    var sparse =
+        DoubleMatrixFactory.sparse(
+            Shape.matrix(10, 10), MatrixCellValue.cell(2, 2, 1), MatrixCellValue.cell(5, 6, 2));
     var vector = DoubleMatrixFactory.vector(randomArray(10));
     var zero = DoubleMatrixFactory.zero(Shape.matrix(10, 10));
     var constantValue = DoubleMatrixFactory.constantValue(Shape.matrix(10, 10), 5);

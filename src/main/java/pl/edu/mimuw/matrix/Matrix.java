@@ -62,8 +62,7 @@ public abstract class Matrix implements IDoubleMatrix {
 
   @Override
   public final Matrix times(IDoubleMatrix other) {
-    if (other instanceof Matrix that)
-      return that.multipliedBy(this);
+    if (other instanceof Matrix) return ((Matrix) other).multipliedBy(this);
     return times(FullMatrix.fromMatrix(other));
   }
 
@@ -119,8 +118,7 @@ public abstract class Matrix implements IDoubleMatrix {
 
   @Override
   public final Matrix plus(IDoubleMatrix other) {
-    if (other instanceof Matrix that)
-      return that.addedTo(this);
+    if (other instanceof Matrix) return ((Matrix) other).addedTo(this);
     return plus(FullMatrix.fromMatrix(other));
   }
 
@@ -157,26 +155,26 @@ public abstract class Matrix implements IDoubleMatrix {
   @Override
   public double normOne() {
     return getExistingColumns()
-            .mapToDouble(j -> getExistingCellsInColumn(j).mapToDouble(i -> Math.abs(get(i, j))).sum())
-            .max()
-            .orElseThrow();
+        .mapToDouble(j -> getExistingCellsInColumn(j).mapToDouble(i -> Math.abs(get(i, j))).sum())
+        .max()
+        .orElse(0.0);
   }
 
   @Override
   public double normInfinity() {
     return getExistingRows()
-            .mapToDouble(i -> getExistingCellsInRow(i).mapToDouble(j -> Math.abs(get(i, j))).sum())
-            .max()
-            .orElseThrow();
+        .mapToDouble(i -> getExistingCellsInRow(i).mapToDouble(j -> Math.abs(get(i, j))).sum())
+        .max()
+        .orElse(0.0);
   }
 
   @Override
   public double frobeniusNorm() {
     return Math.sqrt(
-            getExistingRows()
-                    .mapToDouble(
-                            i -> getExistingCellsInRow(i).mapToDouble(j -> Math.pow(get(i, j), 2)).sum())
-                    .sum());
+        getExistingRows()
+            .mapToDouble(
+                i -> getExistingCellsInRow(i).mapToDouble(j -> Math.pow(get(i, j), 2)).sum())
+            .sum());
   }
 
   // Retrieving the cells.
@@ -219,7 +217,7 @@ public abstract class Matrix implements IDoubleMatrix {
   @Override
   public String toString() {
     var s = new StringBuilder();
-    s.append(super.toString()).append(" ").append(shape()).append("\n");
+    s.append(getClass().getName()).append(" of ").append(shape()).append("\n");
 
     var width = 7;
     s.append(" { { ");
@@ -228,16 +226,14 @@ public abstract class Matrix implements IDoubleMatrix {
       for (var x = 0; x < shape().columns; x++) {
         if (x > 0) s.append(", ");
         var zeroesUntil = x;
-        while (zeroesUntil < shape().columns && Math.abs(get(y, zeroesUntil)) == 0.0)
-          ++zeroesUntil;
+        while (zeroesUntil < shape().columns && Math.abs(get(y, zeroesUntil)) == 0.0) ++zeroesUntil;
 
         if (zeroesUntil - x < 3) {
           s.append(Utility.padLeft(Double.toString(get(y, x)), width - 2));
           continue;
         }
         var spaces = " ".repeat(width * (zeroesUntil - x) - "..., ".length());
-        if (x == 0 && zeroesUntil < shape().columns)
-          s.append(spaces).append("...");
+        if (x == 0 && zeroesUntil < shape().columns) s.append(spaces).append("...");
         else s.append("...").append(spaces);
         x = zeroesUntil - 1;
       }

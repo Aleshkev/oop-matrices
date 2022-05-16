@@ -32,7 +32,13 @@ public final class Shape {
 
   @Override
   public String toString() {
-    return "Shape{" + "rows=" + rows + ", columns=" + columns + '}';
+    return rows
+        + " row"
+        + (rows == 1 ? "" : "s")
+        + " x "
+        + columns
+        + " column"
+        + (columns == 1 ? "" : "s");
   }
 
   void assertInShape(int row, int column) {
