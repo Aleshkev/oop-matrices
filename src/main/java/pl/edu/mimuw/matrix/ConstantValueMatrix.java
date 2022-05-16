@@ -2,7 +2,7 @@ package pl.edu.mimuw.matrix;
 
 import java.util.function.DoubleFunction;
 
-public class ConstantValueMatrix extends Matrix {
+public final class ConstantValueMatrix extends Matrix {
   private final double value;
 
   public ConstantValueMatrix(Shape shape, double value) {
@@ -16,22 +16,22 @@ public class ConstantValueMatrix extends Matrix {
   }
 
   @Override
-  protected Matrix multipliedBy(Matrix what) {
-    return what.times(this);
+  protected Matrix multipliedBy(Matrix that) {
+    return that.times(this);
   }
 
   @Override
-  public Matrix addedTo(Matrix what) {
-    return what.plus(this);
+  public Matrix addedTo(Matrix that) {
+    return that.plus(this);
   }
 
   @Override
   protected Matrix plus(ConstantValueMatrix that) {
-    return new ConstantValueMatrix(additionResultShape(that), value + that.value);
+    return new ConstantValueMatrix(shapeOfThisPlus(that), value + that.value);
   }
 
   @Override
-  protected IDoubleMatrix applyElementwise(DoubleFunction<Double> operator) {
+  protected Matrix mapCells(DoubleFunction<Double> operator) {
     return new ConstantValueMatrix(shape(), operator.apply(value));
   }
 }

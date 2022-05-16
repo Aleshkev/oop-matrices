@@ -5,11 +5,11 @@ import java.util.function.BiFunction;
 import java.util.function.DoubleFunction;
 import java.util.stream.IntStream;
 
-public class DiagonalMatrix extends Matrix {
+public final class DiagonalMatrix extends Matrix {
   private final int size;
   private final double[] diagonalValues;
 
-  protected DiagonalMatrix(double[] diagonalValues) {
+  public DiagonalMatrix(double[] diagonalValues) {
     super(Shape.square(diagonalValues.length));
     this.size = diagonalValues.length;
     this.diagonalValues = diagonalValues;
@@ -34,13 +34,13 @@ public class DiagonalMatrix extends Matrix {
   }
 
   @Override
-  protected Matrix multipliedBy(Matrix what) {
-    return what.times(this);
+  protected Matrix multipliedBy(Matrix that) {
+    return that.times(this);
   }
 
   @Override
-  public Matrix addedTo(Matrix what) {
-    return what.plus(this);
+  public Matrix addedTo(Matrix that) {
+    return that.plus(this);
   }
 
   @Override
@@ -59,10 +59,10 @@ public class DiagonalMatrix extends Matrix {
   }
 
   @Override
-  protected IDoubleMatrix applyElementwise(DoubleFunction<Double> operator) {
+  protected Matrix mapCells(DoubleFunction<Double> operator) {
     if (operator.apply(0.0) == 0.0)
       return fromElementwiseMerge(this, this, (a, b) -> operator.apply(a));
-    return FullMatrix.fromScalarOperation(this, operator);
+    return super.mapCells(operator);
   }
 
   protected IntStream getExistingCellsInRow(int row) {

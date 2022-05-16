@@ -7,7 +7,7 @@ import pl.edu.mimuw.matrix.IDoubleMatrix;
 import pl.edu.mimuw.matrix.Shape;
 
 import static pl.edu.mimuw.TestMatrixData.assertArrayEqualsWithTestPrecision;
-import static pl.edu.mimuw.matrix.Iteration.randomArray;
+import static pl.edu.mimuw.matrix.Utility.randomArray;
 
 public class MatrixBinaryOperationCompletenessTest {
   @Test

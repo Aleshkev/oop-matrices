@@ -24,18 +24,18 @@ public final class VectorMatrix extends Matrix {
   }
 
   @Override
-  protected Matrix multipliedBy(Matrix what) {
-    return what.times(this);
+  protected Matrix multipliedBy(Matrix that) {
+    return that.times(this);
   }
 
   @Override
-  public Matrix addedTo(Matrix what) {
-    return what.plus(this);
+  public Matrix addedTo(Matrix that) {
+    return that.plus(this);
   }
 
   @Override
-  protected IDoubleMatrix applyElementwise(DoubleFunction<Double> operator) {
-    return VectorMatrix.fromMatrix(FullMatrix.fromMatrix(this).applyElementwise(operator));
+  protected Matrix mapCells(DoubleFunction<Double> operator) {
+    return VectorMatrix.fromMatrix(FullMatrix.fromMatrix(this).mapCells(operator));
   }
 
   // This class isn't optimized. See other classes to enjoy some efficient code.

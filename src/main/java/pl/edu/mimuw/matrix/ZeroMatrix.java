@@ -14,111 +14,112 @@ public final class ZeroMatrix extends Matrix {
   }
 
   @Override
-  protected Matrix multipliedBy(Matrix what) {
-    return what.times(this);
+  protected Matrix multipliedBy(Matrix that) {
+    return that.times(this);
   }
 
   @Override
-  public Matrix addedTo(Matrix what) {
-    return what.plus(this);
+  public Matrix addedTo(Matrix that) {
+    return that.plus(this);
   }
 
   @Override
   protected Matrix times(ConstantValueMatrix that) {
-    return new ZeroMatrix(multiplicationResultShape(that));
+    return new ZeroMatrix(shapeOfThisTimes(that));
   }
 
   @Override
   protected Matrix times(DiagonalMatrix that) {
-    return new ZeroMatrix(multiplicationResultShape(that));
+    return new ZeroMatrix(shapeOfThisTimes(that));
   }
 
   @Override
   protected Matrix times(FullMatrix that) {
-    return new ZeroMatrix(multiplicationResultShape(that));
+    return new ZeroMatrix(shapeOfThisTimes(that));
   }
 
   @Override
   protected Matrix times(SparseMatrix that) {
-    return new ZeroMatrix(multiplicationResultShape(that));
+    return new ZeroMatrix(shapeOfThisTimes(that));
   }
 
   @Override
   protected Matrix times(VectorMatrix that) {
-    return new ZeroMatrix(multiplicationResultShape(that));
+    return new ZeroMatrix(shapeOfThisTimes(that));
   }
 
   @Override
   protected Matrix times(AntiDiagonalMatrix that) {
-    return new ZeroMatrix(multiplicationResultShape(that));
+    return new ZeroMatrix(shapeOfThisTimes(that));
   }
 
   @Override
   protected Matrix times(ColumnMatrix that) {
-    return new ZeroMatrix(multiplicationResultShape(that));
+    return new ZeroMatrix(shapeOfThisTimes(that));
   }
 
   @Override
   protected Matrix times(RowMatrix that) {
-    return new ZeroMatrix(multiplicationResultShape(that));
+    return new ZeroMatrix(shapeOfThisTimes(that));
   }
 
   @Override
   protected Matrix plus(ConstantValueMatrix that) {
-    additionResultShape(that);
+    shapeOfThisPlus(that);
     return that;
   }
 
   @Override
   protected Matrix plus(IdentityMatrix that) {
-    additionResultShape(that);
+    shapeOfThisPlus(that);
     return that;
   }
 
   @Override
   protected Matrix plus(DiagonalMatrix that) {
-    additionResultShape(that);
+    shapeOfThisPlus(that);
     return that;
   }
 
   @Override
   protected Matrix plus(FullMatrix that) {
-    additionResultShape(that);
+    shapeOfThisPlus(that);
     return that;
   }
 
   @Override
   protected Matrix plus(SparseMatrix that) {
-    additionResultShape(that);
+    shapeOfThisPlus(that);
     return that;
   }
 
   @Override
   protected Matrix plus(VectorMatrix that) {
-    additionResultShape(that);
+    shapeOfThisPlus(that);
     return that;
   }
 
   @Override
   protected Matrix plus(AntiDiagonalMatrix that) {
-    additionResultShape(that);
+    shapeOfThisPlus(that);
     return that;
   }
 
   @Override
   protected Matrix plus(ColumnMatrix that) {
-    additionResultShape(that);
+    shapeOfThisPlus(that);
     return that;
   }
 
   @Override
   protected Matrix plus(RowMatrix that) {
-    additionResultShape(that);
+    shapeOfThisPlus(that);
     return that;
   }
 
   @Override
-  protected IDoubleMatrix applyElementwise(DoubleFunction<Double> operator) {
+  protected Matrix mapCells(DoubleFunction<Double> operator) {
+    if (operator.apply(0.0) == 0.0) return this;
     return new ConstantValueMatrix(shape(), operator.apply(0.0));
   }
 

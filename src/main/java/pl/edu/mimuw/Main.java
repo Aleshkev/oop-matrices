@@ -4,11 +4,16 @@ import pl.edu.mimuw.matrix.DoubleMatrixFactory;
 import pl.edu.mimuw.matrix.IDoubleMatrix;
 import pl.edu.mimuw.matrix.Shape;
 
-import static pl.edu.mimuw.matrix.Iteration.randomArray;
+import static pl.edu.mimuw.matrix.Utility.randomArray;
+
+// Used IDE: IntelliJ.
+// GitHub repo: https://github.com/Aleshkev/oop-matrices (private until submission deadline).
 
 public class Main {
 
   public static void main(String[] args) {
+    // Example matrices.
+
     var antiDiagonal = DoubleMatrixFactory.antiDiagonal(randomArray(10));
     var column = DoubleMatrixFactory.column(10, randomArray(10));
     var diagonal = DoubleMatrixFactory.diagonal(randomArray(10));

@@ -4,7 +4,7 @@ import java.util.function.BiFunction;
 import java.util.function.DoubleFunction;
 import java.util.stream.IntStream;
 
-public class FullMatrix extends Matrix {
+public final class FullMatrix extends Matrix {
   private final double[][] values;
 
   public FullMatrix(double[][] values) {
@@ -29,7 +29,7 @@ public class FullMatrix extends Matrix {
   public static FullMatrix fromMultiplication(Matrix a, Matrix b) {
     var depth = a.shape().columns;
     return fromFunction(
-        a.multiplicationResultShape(b),
+        a.shapeOfThisTimes(b),
         (x, y) -> IntStream.range(0, depth).mapToDouble(i -> a.get(y, i) * b.get(i, x)).sum());
   }
 
@@ -37,24 +37,23 @@ public class FullMatrix extends Matrix {
     return fromFunction(a.shape(), (x, y) -> a.get(y, x) + b.get(y, x));
   }
 
-  public static FullMatrix fromScalarOperation(
-      IDoubleMatrix matrix, DoubleFunction<Double> operator) {
+  public static FullMatrix fromMappingCells(IDoubleMatrix matrix, DoubleFunction<Double> operator) {
     return fromFunction(matrix.shape(), (x, y) -> operator.apply(matrix.get(y, x)));
   }
 
   @Override
-  protected Matrix multipliedBy(Matrix what) {
-    return what.times(this);
+  protected Matrix multipliedBy(Matrix that) {
+    return that.times(this);
   }
 
   @Override
-  public Matrix addedTo(Matrix what) {
-    return what.plus(this);
+  public Matrix addedTo(Matrix that) {
+    return that.plus(this);
   }
 
   @Override
-  protected FullMatrix applyElementwise(DoubleFunction<Double> operator) {
-    return fromScalarOperation(this, operator);
+  protected FullMatrix mapCells(DoubleFunction<Double> operator) {
+    return fromMappingCells(this, operator);
   }
 
   @Override

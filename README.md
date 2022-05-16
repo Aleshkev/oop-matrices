@@ -28,8 +28,8 @@ przez JUnit, np. `@Test`.
 
 ## Notatki co do rozwiązania
 
-Kolejność kanoniczna:
-    
+Kolejność kanoniczna, żeby o niczym nie zapomnieć:
+
     ✨ faves ✨ 
     ZeroMatrix
     ConstantValueMatrix
@@ -38,7 +38,7 @@ Kolejność kanoniczna:
     FullMatrix
     SparseMatrix
     
-    😪 gimmicky shit 😪
+    😪 borin tings 😪
     VectorMatrix
     AntiDiagonalMatrix
     ColumnMatrix

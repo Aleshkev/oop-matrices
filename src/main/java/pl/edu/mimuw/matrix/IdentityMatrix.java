@@ -15,66 +15,66 @@ public class IdentityMatrix extends Matrix {
   }
 
   @Override
-  protected Matrix multipliedBy(Matrix what) {
-    return what.times(this);
+  protected Matrix multipliedBy(Matrix that) {
+    return that.times(this);
   }
 
   @Override
-  public Matrix addedTo(Matrix what) {
-    return what.plus(this);
+  public Matrix addedTo(Matrix that) {
+    return that.plus(this);
   }
 
   @Override
   protected Matrix times(ConstantValueMatrix that) {
-    multiplicationResultShape(that);
+    shapeOfThisTimes(that);
     return that;
   }
 
   @Override
   protected Matrix times(IdentityMatrix that) {
-    multiplicationResultShape(that);
+    shapeOfThisTimes(that);
     return that;
   }
 
   @Override
   protected Matrix times(DiagonalMatrix that) {
-    multiplicationResultShape(that);
+    shapeOfThisTimes(that);
     return that;
   }
 
   @Override
   protected Matrix times(FullMatrix that) {
-    multiplicationResultShape(that);
+    shapeOfThisTimes(that);
     return that;
   }
 
   @Override
   protected Matrix times(SparseMatrix that) {
-    multiplicationResultShape(that);
+    shapeOfThisTimes(that);
     return that;
   }
 
   @Override
   protected Matrix times(VectorMatrix that) {
-    multiplicationResultShape(that);
+    shapeOfThisTimes(that);
     return that;
   }
 
   @Override
   protected Matrix times(AntiDiagonalMatrix that) {
-    multiplicationResultShape(that);
+    shapeOfThisTimes(that);
     return that;
   }
 
   @Override
   protected Matrix times(ColumnMatrix that) {
-    multiplicationResultShape(that);
+    shapeOfThisTimes(that);
     return that;
   }
 
   @Override
   protected Matrix times(RowMatrix that) {
-    multiplicationResultShape(that);
+    shapeOfThisTimes(that);
     return that;
   }
 
@@ -89,10 +89,10 @@ public class IdentityMatrix extends Matrix {
   }
 
   @Override
-  protected IDoubleMatrix applyElementwise(DoubleFunction<Double> operator) {
+  protected Matrix mapCells(DoubleFunction<Double> operator) {
     if (operator.apply(0.0) == 0.0)
-      return DiagonalMatrix.fromIdentityMatrix(this).applyElementwise(operator);
-    return FullMatrix.fromScalarOperation(this, operator);
+      return DiagonalMatrix.fromIdentityMatrix(this).mapCells(operator);
+    return super.mapCells(operator);
   }
 
   @Override

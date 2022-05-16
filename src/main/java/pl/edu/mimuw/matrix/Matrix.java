@@ -4,21 +4,21 @@ import java.util.function.DoubleFunction;
 import java.util.stream.IntStream;
 
 public abstract class Matrix implements IDoubleMatrix {
-  private final Shape theShape;
+  private final Shape shape;
 
-  protected Matrix(Shape theShape) {
-    this.theShape = theShape;
+  protected Matrix(Shape shape) {
+    this.shape = shape;
   }
 
   // Multiplication.
 
-  protected final Shape multiplicationResultShape(IDoubleMatrix that) {
+  protected final Shape shapeOfThisTimes(IDoubleMatrix that) {
     assert shape().columns == that.shape().rows;
     return Shape.matrix(shape().rows, that.shape().columns);
   }
 
   protected Matrix times(ZeroMatrix that) {
-    return new ZeroMatrix(multiplicationResultShape(that));
+    return new ZeroMatrix(shapeOfThisTimes(that));
   }
 
   protected Matrix times(ConstantValueMatrix that) {
@@ -26,7 +26,7 @@ public abstract class Matrix implements IDoubleMatrix {
   }
 
   protected Matrix times(IdentityMatrix that) {
-    multiplicationResultShape(that);
+    shapeOfThisTimes(that);
     return this;
   }
 
@@ -58,7 +58,7 @@ public abstract class Matrix implements IDoubleMatrix {
     return FullMatrix.fromMultiplication(this, that);
   }
 
-  protected abstract Matrix multipliedBy(Matrix what);
+  protected abstract Matrix multipliedBy(Matrix that);
 
   @Override
   public final Matrix times(IDoubleMatrix other) {
@@ -69,13 +69,13 @@ public abstract class Matrix implements IDoubleMatrix {
 
   // Addition.
 
-  protected final Shape additionResultShape(Matrix that) {
+  protected final Shape shapeOfThisPlus(Matrix that) {
     assert shape().equals(that.shape());
     return shape();
   }
 
   protected Matrix plus(ZeroMatrix that) {
-    additionResultShape(that);
+    shapeOfThisPlus(that);
     return this;
   }
 
@@ -115,7 +115,7 @@ public abstract class Matrix implements IDoubleMatrix {
     return FullMatrix.fromAddition(this, that);
   }
 
-  public abstract Matrix addedTo(Matrix what);
+  public abstract Matrix addedTo(Matrix that);
 
   @Override
   public final Matrix plus(IDoubleMatrix other) {
@@ -131,20 +131,20 @@ public abstract class Matrix implements IDoubleMatrix {
 
   // Scalar multiplication and addition.
 
-  protected IDoubleMatrix applyElementwise(DoubleFunction<Double> operator) {
-    return FullMatrix.fromMatrix(this).applyElementwise(operator);
+  protected Matrix mapCells(DoubleFunction<Double> operator) {
+    return FullMatrix.fromMatrix(this).mapCells(operator);
   }
 
   @Override
   public final IDoubleMatrix times(double scalar) {
     if (scalar == 1) return this;
-    return applyElementwise(x -> scalar * x);
+    return mapCells(x -> scalar * x);
   }
 
   @Override
   public final IDoubleMatrix plus(double scalar) {
     if (Math.abs(scalar) == 0) return this;
-    return applyElementwise(x -> x + scalar);
+    return mapCells(x -> x + scalar);
   }
 
   @Override
@@ -211,7 +211,7 @@ public abstract class Matrix implements IDoubleMatrix {
   }
 
   public Shape shape() {
-    return theShape;
+    return shape;
   }
 
   // String representation.
@@ -232,7 +232,7 @@ public abstract class Matrix implements IDoubleMatrix {
           ++zeroesUntil;
 
         if (zeroesUntil - x < 3) {
-          s.append(Iteration.padLeft(Double.toString(get(y, x)), width - 2));
+          s.append(Utility.padLeft(Double.toString(get(y, x)), width - 2));
           continue;
         }
         var spaces = " ".repeat(width * (zeroesUntil - x) - "..., ".length());

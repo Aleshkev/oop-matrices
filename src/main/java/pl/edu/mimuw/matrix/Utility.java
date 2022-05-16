@@ -1,12 +1,9 @@
 package pl.edu.mimuw.matrix;
 
-import java.util.Random;
 import java.util.stream.IntStream;
 
-public class Iteration {
-  private static final Random random = new Random();
-
-  private Iteration() {}
+public class Utility {
+  private Utility() {}
 
   public static double[] randomArray(int n) {
     return IntStream.range(1, n + 1).mapToDouble(x -> x).toArray();

@@ -41,7 +41,7 @@ public final class SparseMatrix extends Matrix {
   }
 
   private static SparseMatrix fromSparseMultiplication(SparseMatrix a, SparseMatrix b) {
-    a.multiplicationResultShape(b);
+    a.shapeOfThisTimes(b);
     var possibleZ =
         IntStream.concat(Arrays.stream(a.existingColumns), Arrays.stream(b.existingRows))
             .distinct()
@@ -54,11 +54,11 @@ public final class SparseMatrix extends Matrix {
         if (Math.abs(s) != 0.0) values.add(new MatrixCellValue(y, x, s));
       }
     }
-    return new SparseMatrix(a.multiplicationResultShape(b), values.toArray(MatrixCellValue[]::new));
+    return new SparseMatrix(a.shapeOfThisTimes(b), values.toArray(MatrixCellValue[]::new));
   }
 
   private static SparseMatrix fromSparseAddition(SparseMatrix a, SparseMatrix b) {
-    a.additionResultShape(b);
+    a.shapeOfThisPlus(b);
     var cellPositions = new TreeSet<>(MatrixCellValue::compareByRowThenByColumn);
     cellPositions.addAll(Arrays.asList(a.values));
     cellPositions.addAll(Arrays.asList(b.values));
@@ -67,7 +67,7 @@ public final class SparseMatrix extends Matrix {
       int y = cellPosition.row, x = cellPosition.column;
       values.add(new MatrixCellValue(y, x, a.get(y, x) + b.get(y, x)));
     }
-    return new SparseMatrix(a.additionResultShape(b), values.toArray(MatrixCellValue[]::new));
+    return new SparseMatrix(a.shapeOfThisPlus(b), values.toArray(MatrixCellValue[]::new));
   }
 
   @Override
@@ -80,13 +80,13 @@ public final class SparseMatrix extends Matrix {
   }
 
   @Override
-  protected Matrix multipliedBy(Matrix what) {
-    return what.times(this);
+  protected Matrix multipliedBy(Matrix that) {
+    return that.times(this);
   }
 
   @Override
-  public Matrix addedTo(Matrix what) {
-    return what.plus(this);
+  public Matrix addedTo(Matrix that) {
+    return that.plus(this);
   }
 
   @Override
@@ -115,14 +115,14 @@ public final class SparseMatrix extends Matrix {
   }
 
   @Override
-  protected IDoubleMatrix applyElementwise(DoubleFunction<Double> operator) {
+  protected Matrix mapCells(DoubleFunction<Double> operator) {
     if (operator.apply(0.0) == 0.0)
       return new SparseMatrix(
           shape(),
           Arrays.stream(values)
               .map(cell -> cell.withValue(operator.apply(cell.value)))
               .toArray(MatrixCellValue[]::new));
-    return FullMatrix.fromMatrix(this).applyElementwise(operator);
+    return super.mapCells(operator);
   }
 
   @Override
