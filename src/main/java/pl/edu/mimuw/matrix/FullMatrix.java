@@ -10,17 +10,15 @@ public class FullMatrix extends Matrix {
   public FullMatrix(double[][] values) {
     super(Shape.matrix(values.length, values.length > 0 ? values[0].length : -1));
 
-    for (var y = 0; y < shape().rows; y++)
-      assert values[y].length == shape().columns;
+    for (var y = 0; y < shape().rows; y++) assert values[y].length == shape().columns;
     this.values = values;
   }
 
   private static FullMatrix fromFunction(
-          Shape matrixShape, BiFunction<Integer, Integer, Double> getCellValue) {
+      Shape matrixShape, BiFunction<Integer, Integer, Double> getCellValue) {
     var values = new double[matrixShape.rows][matrixShape.columns];
     for (var y = 0; y < matrixShape.rows; y++)
-      for (var x = 0; x < matrixShape.columns; x++)
-        values[y][x] = getCellValue.apply(x, y);
+      for (var x = 0; x < matrixShape.columns; x++) values[y][x] = getCellValue.apply(x, y);
     return new FullMatrix(values);
   }
 
@@ -28,10 +26,11 @@ public class FullMatrix extends Matrix {
     return fromFunction(matrix.shape(), (x, y) -> matrix.get(y, x));
   }
 
-  public static FullMatrix fromMultiplication(IDoubleMatrix a, IDoubleMatrix b, Shape resultShape) {
+  public static FullMatrix fromMultiplication(Matrix a, Matrix b) {
     var depth = a.shape().columns;
-    return fromFunction(resultShape,
-            (x, y) -> IntStream.range(0, depth).mapToDouble(i -> a.get(y, i) * b.get(i, x)).sum());
+    return fromFunction(
+        a.multiplicationResultShape(b),
+        (x, y) -> IntStream.range(0, depth).mapToDouble(i -> a.get(y, i) * b.get(i, x)).sum());
   }
 
   public static FullMatrix fromAddition(IDoubleMatrix a, IDoubleMatrix b) {
@@ -39,25 +38,22 @@ public class FullMatrix extends Matrix {
   }
 
   public static FullMatrix fromScalarOperation(
-          IDoubleMatrix matrix, DoubleFunction<Double> operator) {
+      IDoubleMatrix matrix, DoubleFunction<Double> operator) {
     return fromFunction(matrix.shape(), (x, y) -> operator.apply(matrix.get(y, x)));
   }
 
   @Override
-  protected IDoubleMatrix doMultiplication(IDoubleMatrix other, Shape resultShape) {
-    if (other instanceof ZeroMatrix that) return new ZeroMatrix(resultShape);
-    if (other instanceof IdentityMatrix that) return this;
-    return fromMultiplication(this, other, resultShape);
+  protected Matrix multipliedBy(Matrix what) {
+    return what.times(this);
   }
 
   @Override
-  protected IDoubleMatrix doAddition(IDoubleMatrix other) {
-    if (other instanceof ZeroMatrix that) return this;
-    return fromAddition(this, other);
+  public Matrix addedTo(Matrix what) {
+    return what.plus(this);
   }
 
   @Override
-  protected IDoubleMatrix doScalarOperation(DoubleFunction<Double> operator) {
+  protected FullMatrix applyElementwise(DoubleFunction<Double> operator) {
     return fromScalarOperation(this, operator);
   }
 

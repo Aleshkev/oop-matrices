@@ -1,7 +1,5 @@
 package pl.edu.mimuw.matrix;
 
-import java.util.function.DoubleFunction;
-
 public final class ColumnMatrix extends Matrix {
   private final double[] rowValues;
 
@@ -15,20 +13,15 @@ public final class ColumnMatrix extends Matrix {
     return rowValues[column];
   }
 
-  // Too lazy to implement these optimally.
-
   @Override
-  protected IDoubleMatrix doMultiplication(IDoubleMatrix other, Shape resultShape) {
-    return FullMatrix.fromMatrix(this).doMultiplication(other, resultShape);
+  protected Matrix multipliedBy(Matrix what) {
+    return what.times(this);
   }
 
   @Override
-  protected IDoubleMatrix doAddition(IDoubleMatrix other) {
-    return FullMatrix.fromMatrix(this).doAddition(other);
+  public Matrix addedTo(Matrix what) {
+    return what.plus(this);
   }
 
-  @Override
-  protected IDoubleMatrix doScalarOperation(DoubleFunction<Double> operator) {
-    return FullMatrix.fromMatrix(this).doScalarOperation(operator);
-  }
+  // This class isn't optimized. See other classes to enjoy some efficient code.
 }

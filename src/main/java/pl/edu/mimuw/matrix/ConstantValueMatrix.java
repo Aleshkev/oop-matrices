@@ -16,18 +16,22 @@ public class ConstantValueMatrix extends Matrix {
   }
 
   @Override
-  protected IDoubleMatrix doMultiplication(IDoubleMatrix other, Shape resultShape) {
-    return FullMatrix.fromMultiplication(this, other, resultShape);
+  protected Matrix multipliedBy(Matrix what) {
+    return what.times(this);
   }
 
   @Override
-  protected IDoubleMatrix doAddition(IDoubleMatrix other) {
-    if(other instanceof ZeroMatrix that) return this;
-    return other.plus(value);
+  public Matrix addedTo(Matrix what) {
+    return what.plus(this);
   }
 
   @Override
-  protected IDoubleMatrix doScalarOperation(DoubleFunction<Double> operator) {
+  protected Matrix plus(ConstantValueMatrix that) {
+    return new ConstantValueMatrix(additionResultShape(that), value + that.value);
+  }
+
+  @Override
+  protected IDoubleMatrix applyElementwise(DoubleFunction<Double> operator) {
     return new ConstantValueMatrix(shape(), operator.apply(value));
   }
 }

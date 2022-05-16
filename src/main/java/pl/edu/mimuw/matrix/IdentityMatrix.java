@@ -15,21 +15,83 @@ public class IdentityMatrix extends Matrix {
   }
 
   @Override
-  protected IDoubleMatrix doMultiplication(IDoubleMatrix other, Shape resultShape) {
-    return other;
+  protected Matrix multipliedBy(Matrix what) {
+    return what.times(this);
   }
 
   @Override
-  protected IDoubleMatrix doAddition(IDoubleMatrix other) {
-    if (other instanceof ZeroMatrix that) return this;
-    if (other instanceof IdentityMatrix that)
-      return DiagonalMatrix.fromIdentityMatrix(this).plus(that);
-    if (other instanceof DiagonalMatrix that) return that.plus(this);
-    return FullMatrix.fromAddition(this, other);
+  public Matrix addedTo(Matrix what) {
+    return what.plus(this);
   }
 
   @Override
-  protected IDoubleMatrix doScalarOperation(DoubleFunction<Double> operator) {
+  protected Matrix times(ConstantValueMatrix that) {
+    multiplicationResultShape(that);
+    return that;
+  }
+
+  @Override
+  protected Matrix times(IdentityMatrix that) {
+    multiplicationResultShape(that);
+    return that;
+  }
+
+  @Override
+  protected Matrix times(DiagonalMatrix that) {
+    multiplicationResultShape(that);
+    return that;
+  }
+
+  @Override
+  protected Matrix times(FullMatrix that) {
+    multiplicationResultShape(that);
+    return that;
+  }
+
+  @Override
+  protected Matrix times(SparseMatrix that) {
+    multiplicationResultShape(that);
+    return that;
+  }
+
+  @Override
+  protected Matrix times(VectorMatrix that) {
+    multiplicationResultShape(that);
+    return that;
+  }
+
+  @Override
+  protected Matrix times(AntiDiagonalMatrix that) {
+    multiplicationResultShape(that);
+    return that;
+  }
+
+  @Override
+  protected Matrix times(ColumnMatrix that) {
+    multiplicationResultShape(that);
+    return that;
+  }
+
+  @Override
+  protected Matrix times(RowMatrix that) {
+    multiplicationResultShape(that);
+    return that;
+  }
+
+  @Override
+  protected Matrix plus(IdentityMatrix that) {
+    return DiagonalMatrix.fromIdentityMatrix(this).plus(that);
+  }
+
+  @Override
+  protected Matrix plus(DiagonalMatrix that) {
+    return DiagonalMatrix.fromIdentityMatrix(this).plus(that);
+  }
+
+  @Override
+  protected IDoubleMatrix applyElementwise(DoubleFunction<Double> operator) {
+    if (operator.apply(0.0) == 0.0)
+      return DiagonalMatrix.fromIdentityMatrix(this).applyElementwise(operator);
     return FullMatrix.fromScalarOperation(this, operator);
   }
 
