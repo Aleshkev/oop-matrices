@@ -27,6 +27,7 @@ public final class SparseMatrix extends Matrix {
         Arrays.stream(values).mapToInt(cell -> cell.column).sorted().distinct().toArray();
   }
 
+  /** Convert the matrix to a sparse matrix. Skips blank cells if possible. */
   public static SparseMatrix fromMatrix(Matrix matrix) {
     var values = new ArrayList<MatrixCellValue>();
 
@@ -36,10 +37,15 @@ public final class SparseMatrix extends Matrix {
             y ->
                 matrix
                     .getExistingCellsInRow(y)
-                    .forEach(x -> values.add(MatrixCellValue.cell(y, x, matrix.get(y, x)))));
+                    .forEach(
+                        x -> {
+                          var value = matrix.get(y, x);
+                          if (Math.abs(value) != 0.0) values.add(MatrixCellValue.cell(y, x, value));
+                        }));
     return new SparseMatrix(matrix.shape(), values.toArray(MatrixCellValue[]::new));
   }
 
+  /** Multiply two sparse matrices. */
   private static SparseMatrix fromSparseMultiplication(SparseMatrix a, SparseMatrix b) {
     a.shapeOfThisTimes(b);
     var possibleZ =
@@ -57,6 +63,7 @@ public final class SparseMatrix extends Matrix {
     return new SparseMatrix(a.shapeOfThisTimes(b), values.toArray(MatrixCellValue[]::new));
   }
 
+  /** Add two sparse matrices. */
   private static SparseMatrix fromSparseAddition(SparseMatrix a, SparseMatrix b) {
     a.shapeOfThisPlus(b);
     var cellPositions = new TreeSet<>(MatrixCellValue::compareByRowThenByColumn);
@@ -124,6 +131,11 @@ public final class SparseMatrix extends Matrix {
               .toArray(MatrixCellValue[]::new));
     return super.mapCells(operator);
   }
+
+  // These methods actually return too many cells as non-empty, which could be easily fixed with
+  // more memory or more time complexity. But this is good enough; operations will at most use the
+  // same amount of time as if the sparse matrix was a full matrix with no completely blank rows or
+  // columns.
 
   @Override
   protected IntStream getExistingRows() {

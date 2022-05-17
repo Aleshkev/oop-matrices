@@ -6,10 +6,11 @@ import pl.edu.mimuw.matrix.FullMatrix;
 import pl.edu.mimuw.matrix.IDoubleMatrix;
 import pl.edu.mimuw.matrix.Shape;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static pl.edu.mimuw.TestMatrixData.assertArrayEqualsWithTestPrecision;
 import static pl.edu.mimuw.matrix.Utility.randomArray;
 
-public class MatrixBinaryOperationCompletenessTest {
+public class MatrixOperationCompletenessTest {
   @Test
   public void testAllCombinations() {
     var antiDiagonal = DoubleMatrixFactory.antiDiagonal(randomArray(10));
@@ -40,6 +41,18 @@ public class MatrixBinaryOperationCompletenessTest {
         assertArrayEqualsWithTestPrecision(aPlusBRef.data(), bPlusA.data());
         assertArrayEqualsWithTestPrecision(aTimesBRef.data(), aTimesB.data());
       }
+    }
+
+    for (var a : all) {
+      var aNormOne = a.normOne();
+      var aNormOneRef = FullMatrix.fromMatrix(a).normOne();
+      var aNormInfinity = a.normInfinity();
+      var aNormInfinityRef = FullMatrix.fromMatrix(a).normInfinity();
+      var aFrobeniusNorm = FullMatrix.fromMatrix(a).frobeniusNorm();
+      var aFrobeniusNormRef = FullMatrix.fromMatrix(a).frobeniusNorm();
+      assertEquals(aNormOne, aNormOneRef);
+      assertEquals(aNormInfinity, aNormInfinityRef);
+      assertEquals(aFrobeniusNorm, aFrobeniusNormRef);
     }
   }
 }

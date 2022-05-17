@@ -14,6 +14,10 @@ public final class FullMatrix extends Matrix {
     this.values = values;
   }
 
+  /**
+   * @return The matrix where each cell's value is determined by the result of the function applied
+   *     to the cell's position, as a {@code FullMatrix}.
+   */
   private static FullMatrix fromFunction(
       Shape matrixShape, BiFunction<Integer, Integer, Double> getCellValue) {
     var values = new double[matrixShape.rows][matrixShape.columns];
@@ -22,10 +26,16 @@ public final class FullMatrix extends Matrix {
     return new FullMatrix(values);
   }
 
+  /**
+   * @return The matrix, as a {@code FullMatrix}.
+   */
   public static FullMatrix fromMatrix(IDoubleMatrix matrix) {
     return fromFunction(matrix.shape(), (x, y) -> matrix.get(y, x));
   }
 
+  /**
+   * @return {@code a} × {@code b}, as a {@code FullMatrix}.
+   */
   public static FullMatrix fromMultiplication(Matrix a, Matrix b) {
     var depth = a.shape().columns;
     return fromFunction(
@@ -33,10 +43,17 @@ public final class FullMatrix extends Matrix {
         (x, y) -> IntStream.range(0, depth).mapToDouble(i -> a.get(y, i) * b.get(i, x)).sum());
   }
 
+  /**
+   * @return {@code a} + {@code b}, as a {@code FullMatrix}.
+   */
   public static FullMatrix fromAddition(IDoubleMatrix a, IDoubleMatrix b) {
     return fromFunction(a.shape(), (x, y) -> a.get(y, x) + b.get(y, x));
   }
 
+  /**
+   * @return The matrix where each cell's value is determined by the result of the function applied
+   *     to the cell's value in the provided matrix, as a {@code FullMatrix}.
+   */
   public static FullMatrix fromMappingCells(IDoubleMatrix matrix, DoubleFunction<Double> operator) {
     return fromFunction(matrix.shape(), (x, y) -> operator.apply(matrix.get(y, x)));
   }

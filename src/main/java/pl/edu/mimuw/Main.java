@@ -8,6 +8,7 @@ import pl.edu.mimuw.matrix.Shape;
 import static pl.edu.mimuw.matrix.Utility.randomArray;
 
 // Used IDE: IntelliJ.
+// Google Code Style, max. line width of 100 characters.
 // GitHub repo: https://github.com/Aleshkev/oop-matrices (private until submission deadline).
 
 public class Main {

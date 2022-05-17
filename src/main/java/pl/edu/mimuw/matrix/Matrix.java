@@ -3,6 +3,15 @@ package pl.edu.mimuw.matrix;
 import java.util.function.DoubleFunction;
 import java.util.stream.IntStream;
 
+/**
+ * The implementation of the {@code IDoubleMatrix} interface.
+ *
+ * <p>Together with the subclasses, it uses double dispatch to dispatch the implementations of
+ * binary operations. The methods used internally to do that are defined here, so as not to share
+ * them in the public interface. This results in a single check and a cast to see if the object on
+ * the right side of a binary operation is native to this module, and must be converted to a
+ * compatible type if not.
+ */
 public abstract class Matrix implements IDoubleMatrix {
   private final Shape shape;
 
@@ -12,6 +21,10 @@ public abstract class Matrix implements IDoubleMatrix {
 
   // Multiplication.
 
+  /**
+   * @return The shape of the matrix that is the result of this x that. Raises AssertionError if the
+   *     shapes don't allow multiplication.
+   */
   protected final Shape shapeOfThisTimes(IDoubleMatrix that) {
     assert shape().columns == that.shape().rows;
     return Shape.matrix(shape().rows, that.shape().columns);
@@ -58,8 +71,10 @@ public abstract class Matrix implements IDoubleMatrix {
     return FullMatrix.fromMultiplication(this, that);
   }
 
+  /** Dispatch the multiplication to the appropriate method. */
   protected abstract Matrix multipliedBy(Matrix that);
 
+  // This is final because we want the subclasses to implement each narrow overload separately.
   @Override
   public final Matrix times(IDoubleMatrix other) {
     if (other instanceof Matrix) return ((Matrix) other).multipliedBy(this);
@@ -68,6 +83,10 @@ public abstract class Matrix implements IDoubleMatrix {
 
   // Addition.
 
+  /**
+   * @return The shape of the matrix that is the result of this + that. Raises AssertionError if the
+   *     shapes don't allow addition.
+   */
   protected final Shape shapeOfThisPlus(Matrix that) {
     assert shape().equals(that.shape());
     return shape();
@@ -114,8 +133,10 @@ public abstract class Matrix implements IDoubleMatrix {
     return FullMatrix.fromAddition(this, that);
   }
 
+  /** Dispatch the addition to the appropriate method. */
   public abstract Matrix addedTo(Matrix that);
 
+  // This is final because we want the subclasses to implement each narrow overload separately.
   @Override
   public final Matrix plus(IDoubleMatrix other) {
     if (other instanceof Matrix) return ((Matrix) other).addedTo(this);
@@ -129,6 +150,9 @@ public abstract class Matrix implements IDoubleMatrix {
 
   // Scalar multiplication and addition.
 
+  /**
+   * @return A matrix created by applying {@code operator} to every value of a cell in the matrix.
+   */
   protected Matrix mapCells(DoubleFunction<Double> operator) {
     return FullMatrix.fromMatrix(this).mapCells(operator);
   }
@@ -151,6 +175,9 @@ public abstract class Matrix implements IDoubleMatrix {
   }
 
   // Norm functions.
+  //
+  // They use the helper getExistingCells* methods not to traverse empty cells, so they often don't
+  // need to be overridden to be optimally efficient.
 
   @Override
   public double normOne() {
@@ -183,6 +210,11 @@ public abstract class Matrix implements IDoubleMatrix {
     return FullMatrix.fromMatrix(this).data();
   }
 
+  /**
+   * Assumes the coordinates are correct.
+   *
+   * @return The value of the cell at the given position.
+   */
   protected abstract double getButUnchecked(int row, int column);
 
   public double get(int row, int column) {
@@ -192,18 +224,30 @@ public abstract class Matrix implements IDoubleMatrix {
 
   // Metadata used by other methods.
 
+  /**
+   * @return Stream with the y coordinates of all rows which contain non-zero values.
+   */
   protected IntStream getExistingRows() {
     return IntStream.range(0, shape().rows);
   }
 
+  /**
+   * @return Stream with the x coordinates of all non-zero cells in the row.
+   */
   protected IntStream getExistingCellsInRow(int row) {
     return IntStream.range(0, shape().columns);
   }
 
+  /**
+   * @return Stream with the x coordinates of all columns which contain non-zero values.
+   */
   protected IntStream getExistingColumns() {
     return IntStream.range(0, shape().columns);
   }
 
+  /**
+   * @return Stream with the y coordinates of all non-zero cells in the column.
+   */
   protected IntStream getExistingCellsInColumn(int column) {
     return IntStream.range(0, shape().rows);
   }
@@ -214,12 +258,16 @@ public abstract class Matrix implements IDoubleMatrix {
 
   // String representation.
 
+  /**
+   * @return A string representation of the matrix; contains the class name, dimensions, and all the
+   *     data inside, in a tabular form. Converts long spans of zeroes to ellipses.
+   */
   @Override
   public String toString() {
     var s = new StringBuilder();
     s.append(getClass().getName()).append(" of ").append(shape()).append("\n");
 
-    var width = 7;
+    var width = 7; // Width of a cell in the string representation.
     s.append(" { { ");
     for (var y = 0; y < shape().rows; y++) {
       if (y > 0) s.append("   { ");
