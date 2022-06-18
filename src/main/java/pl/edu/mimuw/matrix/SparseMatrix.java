@@ -32,11 +32,11 @@ public final class SparseMatrix extends Matrix {
     var values = new ArrayList<MatrixCellValue>();
 
     matrix
-        .getExistingRows()
+        .getIndicesOfExistingRows()
         .forEach(
             y ->
                 matrix
-                    .getExistingCellsInRow(y)
+                    .getIndicesOfExistingCellsInRow(y)
                     .forEach(
                         x -> {
                           var value = matrix.get(y, x);
@@ -138,22 +138,22 @@ public final class SparseMatrix extends Matrix {
   // columns.
 
   @Override
-  protected IntStream getExistingRows() {
+  protected IntStream getIndicesOfExistingRows() {
     return Arrays.stream(existingRows);
   }
 
   @Override
-  protected IntStream getExistingCellsInRow(int row) {
+  protected IntStream getIndicesOfExistingCellsInRow(int row) {
     return Arrays.stream(existingColumns);
   }
 
   @Override
-  protected IntStream getExistingColumns() {
+  protected IntStream getIndicesOfExistingColumns() {
     return Arrays.stream(existingColumns);
   }
 
   @Override
-  protected IntStream getExistingCellsInColumn(int column) {
+  protected IntStream getIndicesOfExistingCellsInColumn(int column) {
     return Arrays.stream(existingRows);
   }
 }

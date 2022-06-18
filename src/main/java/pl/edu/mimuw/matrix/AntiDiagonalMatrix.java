@@ -52,11 +52,11 @@ public final class AntiDiagonalMatrix extends Matrix {
     return fromElementwiseMerge(this, this, (a, b) -> operator.apply(a));
   }
 
-  protected IntStream getExistingCellsInRow(int row) {
+  protected IntStream getIndicesOfExistingCellsInRow(int row) {
     return IntStream.of(size - row - 1);
   }
 
-  protected IntStream getExistingCellsInColumn(int column) {
+  protected IntStream getIndicesOfExistingCellsInColumn(int column) {
     return IntStream.of(size - column - 1);
   }
 }

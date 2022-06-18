@@ -106,12 +106,12 @@ public class IdentityMatrix extends Matrix {
   }
 
   @Override
-  protected IntStream getExistingCellsInRow(int row) {
+  protected IntStream getIndicesOfExistingCellsInRow(int row) {
     return IntStream.of(row);
   }
 
   @Override
-  protected IntStream getExistingCellsInColumn(int column) {
+  protected IntStream getIndicesOfExistingCellsInColumn(int column) {
     return IntStream.of(column);
   }
 }

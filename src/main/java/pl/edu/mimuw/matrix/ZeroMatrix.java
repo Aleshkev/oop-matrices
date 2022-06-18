@@ -139,22 +139,22 @@ public final class ZeroMatrix extends Matrix {
   }
 
   @Override
-  protected IntStream getExistingRows() {
+  protected IntStream getIndicesOfExistingRows() {
     return IntStream.empty();
   }
 
   @Override
-  protected IntStream getExistingCellsInRow(int row) {
+  protected IntStream getIndicesOfExistingCellsInRow(int row) {
     return IntStream.empty();
   }
 
   @Override
-  protected IntStream getExistingColumns() {
+  protected IntStream getIndicesOfExistingColumns() {
     return IntStream.empty();
   }
 
   @Override
-  protected IntStream getExistingCellsInColumn(int column) {
+  protected IntStream getIndicesOfExistingCellsInColumn(int column) {
     return IntStream.empty();
   }
 }

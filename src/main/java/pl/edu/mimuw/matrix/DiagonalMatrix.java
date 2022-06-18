@@ -65,11 +65,11 @@ public final class DiagonalMatrix extends Matrix {
     return super.mapCells(operator);
   }
 
-  protected IntStream getExistingCellsInRow(int row) {
+  protected IntStream getIndicesOfExistingCellsInRow(int row) {
     return IntStream.of(row);
   }
 
-  protected IntStream getExistingCellsInColumn(int column) {
+  protected IntStream getIndicesOfExistingCellsInColumn(int column) {
     return IntStream.of(column);
   }
 }

@@ -181,16 +181,18 @@ public abstract class Matrix implements IDoubleMatrix {
 
   @Override
   public double normOne() {
-    return getExistingColumns()
-        .mapToDouble(j -> getExistingCellsInColumn(j).mapToDouble(i -> Math.abs(get(i, j))).sum())
+    return getIndicesOfExistingColumns()
+        .mapToDouble(
+            j -> getIndicesOfExistingCellsInColumn(j).mapToDouble(i -> Math.abs(get(i, j))).sum())
         .max()
         .orElse(0.0);
   }
 
   @Override
   public double normInfinity() {
-    return getExistingRows()
-        .mapToDouble(i -> getExistingCellsInRow(i).mapToDouble(j -> Math.abs(get(i, j))).sum())
+    return getIndicesOfExistingRows()
+        .mapToDouble(
+            i -> getIndicesOfExistingCellsInRow(i).mapToDouble(j -> Math.abs(get(i, j))).sum())
         .max()
         .orElse(0.0);
   }
@@ -198,9 +200,12 @@ public abstract class Matrix implements IDoubleMatrix {
   @Override
   public double frobeniusNorm() {
     return Math.sqrt(
-        getExistingRows()
+        getIndicesOfExistingRows()
             .mapToDouble(
-                i -> getExistingCellsInRow(i).mapToDouble(j -> Math.pow(get(i, j), 2)).sum())
+                i ->
+                    getIndicesOfExistingCellsInRow(i)
+                        .mapToDouble(j -> Math.pow(get(i, j), 2))
+                        .sum())
             .sum());
   }
 
@@ -217,7 +222,7 @@ public abstract class Matrix implements IDoubleMatrix {
    */
   protected abstract double getButUnchecked(int row, int column);
 
-  public double get(int row, int column) {
+  public final double get(int row, int column) {
     shape().assertInShape(row, column);
     return getButUnchecked(row, column);
   }
@@ -227,28 +232,28 @@ public abstract class Matrix implements IDoubleMatrix {
   /**
    * @return Stream with the y coordinates of all rows which contain non-zero values.
    */
-  protected IntStream getExistingRows() {
+  protected IntStream getIndicesOfExistingRows() {
     return IntStream.range(0, shape().rows);
   }
 
   /**
    * @return Stream with the x coordinates of all non-zero cells in the row.
    */
-  protected IntStream getExistingCellsInRow(int row) {
+  protected IntStream getIndicesOfExistingCellsInRow(int row) {
     return IntStream.range(0, shape().columns);
   }
 
   /**
    * @return Stream with the x coordinates of all columns which contain non-zero values.
    */
-  protected IntStream getExistingColumns() {
+  protected IntStream getIndicesOfExistingColumns() {
     return IntStream.range(0, shape().columns);
   }
 
   /**
    * @return Stream with the y coordinates of all non-zero cells in the column.
    */
-  protected IntStream getExistingCellsInColumn(int column) {
+  protected IntStream getIndicesOfExistingCellsInColumn(int column) {
     return IntStream.range(0, shape().rows);
   }
 
